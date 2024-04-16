@@ -1,35 +1,24 @@
 const express = require('express');
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const user = require('../routes/user');
+const {
+  startMemoryMongoServer,
+  stopMemoryMongoServer,
+} = require('./memoryMongoServer');
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
 app.use('/', user);
 
-let mongoServer;
-
 // Completely tear down and set up between every test
 beforeEach(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri);
-
-  const { collections } = mongoose.connection;
-  mongoose.connection.createCollection('users');
-  const mockUser = {
-    username: 'testUser',
-  };
-
-  const { users } = collections;
-  await users.insertOne(mockUser);
+  await startMemoryMongoServer();
 });
 
 afterEach(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
+  await stopMemoryMongoServer();
 });
 
 const { users } = mongoose.connection.collections;
