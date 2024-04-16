@@ -5,6 +5,7 @@ const cors = require('cors');
 const express = require('express');
 const path = require('path');
 const logger = require('morgan');
+const { startMemoryMongoServer } = require('./tests/memoryMongoServer');
 
 const app = express();
 
@@ -44,5 +45,10 @@ app.use((err, req, res) => {
   res.status(err.status || 500);
   res.render('error');
 });
+
+if (process.env.NODE_ENV === 'development') startMemoryMongoServer();
+if (process.env.NODE_ENV === 'production') {
+  // ... connect to MongoDB Atlas
+}
 
 module.exports = app;
