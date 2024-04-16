@@ -11,4 +11,6 @@ router.get('/test', (req, res) => {
 // Get user
 router.get('/:username', userController.getUser);
 
+router.post('/', userController.signUp);
+
 module.exports = router;

@@ -1,5 +1,10 @@
+const { checkSchema } = require('express-validator');
 const asyncHandler = require('express-async-handler');
+const bcrypt = require('bcryptjs');
 const findUser = require('../utils/findUser');
+const respondOnValidationError = require('../utils/respondOnValidationError');
+const User = require('../models/user');
+const userSchema = require('../models/express-validator-schemas/user');
 
 exports.getUser = asyncHandler(async (req, res) => {
   try {
@@ -22,4 +27,20 @@ exports.getUser = asyncHandler(async (req, res) => {
       .status(500)
       .send({ errors: [{ title: 'Internal server error' }] });
   }
+});
+
+exports.signUp = asyncHandler(async (req, res, next) => {
+  const user = new User({
+    username: req.body.username,
+  });
+
+  // Encrypt password
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    user.password = hashedPassword;
+    await user.save();
+  } catch (error) {
+    next(error);
+  }
+  res.send();
 });

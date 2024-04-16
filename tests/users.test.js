@@ -23,8 +23,8 @@ afterEach(async () => {
 
 const { users } = mongoose.connection.collections;
 
-describe('Verify that the db and collections are set up as intended', () => {
-  describe('[Users collection]', () => {
+describe('Verify test db setup', () => {
+  describe('Users collection', () => {
     it('finds the inserted test user in the db', async () => {
       expect(await users.findOne({ username: 'testUser' })).toHaveProperty(
         'username',
@@ -46,11 +46,19 @@ describe('Users API', () => {
     expect(res.body.username).toBe('testUser');
   });
 
-  test.skip('signup works', async () => {
-    await request(app)
-      .post('/')
-      .type('form')
-      .send({ username: 'hello', password: 'abc' })
-      .expect(200);
+  describe('Signup', () => {
+    test('creates user', async () => {
+      const res = await request(app)
+        .post('/')
+        .type('form')
+        .send({ username: 'signup' })
+        .send({ password: 'abc' });
+
+      expect(res.statusCode).toBe(200);
+
+      // const signedUpUser = await users.findOne({ username: 'signup' });
+      // console.log(signedUpUser);
+      // expect(await users.countDocuments({})).toBe(2);
+    });
   });
 });
