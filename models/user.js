@@ -1,0 +1,42 @@
+const mongoose = require('mongoose');
+
+const UserSchema = mongoose.Schema({
+  username: {
+    type: String,
+    maxLength: [20, 'Username must not exceed 20 characters'],
+    required: true,
+  },
+  password: {
+    type: String,
+    minLength: [3, 'Password must be at least 3 characters long'],
+    required: true,
+  },
+  dateCreated: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+  friends: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  followers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  bio: {
+    type: String,
+    maxLength: [200, 'Bio must not exceed 200 characters'],
+  },
+  isBot: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+});
+
+module.exports = mongoose.model('User', UserSchema);
