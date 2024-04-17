@@ -47,7 +47,7 @@ describe('Users API', () => {
       expect(res.body.username).toBe('testUser');
       expect(res.body.normalizedUsername).toBe('testuser');
       expect(res.body.firstName).toBe('Paula');
-      expect(res.body._id).toBeTruthy();
+      expect(mongoose.isValidObjectId(res.body._id)).toBeTruthy();
       expect(res.body.friends).toBeTruthy();
       expect(res.body.followers).toBeTruthy();
       expect(res.body.isBot).toBe(false);
