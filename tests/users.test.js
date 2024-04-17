@@ -45,6 +45,7 @@ describe('Users API', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.username).toBe('testUser');
     expect(res.body.normalizedUsername).toBe('testuser');
+    expect(res.body.firstName).toBe('Paula');
     expect(res.body._id).toBeTruthy();
     expect(res.body.friends).toBeTruthy();
     expect(res.body.followers).toBeTruthy();
@@ -56,6 +57,7 @@ describe('Users API', () => {
       const res = await request(app)
         .post('/')
         .type('form')
+        .send({ firstName: 'Ness' })
         .send({ password: 'abc' });
 
       expect(res.statusCode).toBe(400);
@@ -65,7 +67,18 @@ describe('Users API', () => {
       const res = await request(app)
         .post('/')
         .type('form')
-        .send({ username: 'signup' });
+        .send({ username: 'signup' })
+        .send({ firstName: 'Ness' });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('fails if no first name is provided', async () => {
+      const res = await request(app)
+        .post('/')
+        .type('form')
+        .send({ username: 'signup' })
+        .send({ password: 'abc' });
 
       expect(res.statusCode).toBe(400);
     });
@@ -140,6 +153,7 @@ describe('Users API', () => {
         .post('/')
         .type('form')
         .send({ username: 'signup' })
+        .send({ firstName: 'Ness' })
         .send({ password: 'abc' });
 
       expect(res.statusCode).toBe(200);

@@ -11,6 +11,11 @@ const UserSchema = mongoose.Schema({
     maxLength: [20, 'Username must not exceed 20 characters'],
     required: true,
   },
+  firstName: {
+    type: String,
+    maxLength: [20, 'First name must not exceed 20 characters'],
+    required: true,
+  },
   password: {
     type: String,
     minLength: [3, 'Password must be at least 3 characters long'],

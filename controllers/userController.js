@@ -18,6 +18,7 @@ exports.getUser = asyncHandler(async (req, res) => {
       _id: foundUser._id,
       username: foundUser.username,
       normalizedUsername: foundUser.normalizedUsername,
+      firstName: foundUser.firstName,
       dateCreated: foundUser.dateCreated,
       friends: foundUser.friends,
       followers: foundUser.followers,

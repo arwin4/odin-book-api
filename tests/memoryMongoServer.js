@@ -13,6 +13,7 @@ async function startMemoryMongoServer() {
   const mockUser = {
     username: 'testUser',
     normalizedUsername: 'testuser',
+    firstName: 'Paula',
   };
 
   const { users } = collections;
