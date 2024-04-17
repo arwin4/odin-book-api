@@ -39,17 +39,23 @@ describe('Verify test db setup', () => {
 });
 
 describe('Users API', () => {
-  it('gets the test user', async () => {
-    const res = await request(app).get('/testUser');
+  describe('Get user', () => {
+    it('gets the test user', async () => {
+      const res = await request(app).get('/testUser');
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body.username).toBe('testUser');
-    expect(res.body.normalizedUsername).toBe('testuser');
-    expect(res.body.firstName).toBe('Paula');
-    expect(res.body._id).toBeTruthy();
-    expect(res.body.friends).toBeTruthy();
-    expect(res.body.followers).toBeTruthy();
-    expect(res.body.isBot).toBe(false);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.username).toBe('testUser');
+      expect(res.body.normalizedUsername).toBe('testuser');
+      expect(res.body.firstName).toBe('Paula');
+      expect(res.body._id).toBeTruthy();
+      expect(res.body.friends).toBeTruthy();
+      expect(res.body.followers).toBeTruthy();
+      expect(res.body.isBot).toBe(false);
+    });
+    test('inexistent user causes 404 ', async () => {
+      const res = await request(app).get('/i-dont-exist');
+      expect(res.statusCode).toBe(404);
+    });
   });
 
   describe('Signup', () => {
