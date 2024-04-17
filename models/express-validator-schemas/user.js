@@ -1,5 +1,6 @@
 const userSchema = {
   username: {
+    exists: true,
     trim: true,
     escape: true,
     isLength: {
@@ -8,6 +9,7 @@ const userSchema = {
     },
   },
   password: {
+    exists: true,
     trim: true,
     isLength: {
       options: { min: 3, max: 64 },

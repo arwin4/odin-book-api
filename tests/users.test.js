@@ -52,6 +52,24 @@ describe('Users API', () => {
   });
 
   describe('Signup', () => {
+    it('fails if no username is provided', async () => {
+      const res = await request(app)
+        .post('/')
+        .type('form')
+        .send({ password: 'abc' });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('fails if no password is provided', async () => {
+      const res = await request(app)
+        .post('/')
+        .type('form')
+        .send({ username: 'signup' });
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it('fails if password too short', async () => {
       const res = await request(app)
         .post('/')
