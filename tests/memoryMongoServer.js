@@ -8,18 +8,33 @@ async function startMemoryMongoServer() {
   const mongoUri = mongoServer.getUri();
   await mongoose.connect(mongoUri);
 
-  const { collections } = mongoose.connection;
-  mongoose.connection.createCollection('users');
+  // Set up users. MongoDB creates the collection implicitly when referenced.
+  const { users } = mongoose.connection.collections;
+
   const mockUser = {
     username: 'testUser',
     normalizedUsername: 'testuser',
     firstName: 'Paula',
   };
-
-  const { users } = collections;
   await users.insertOne(mockUser);
 
-  return mongoServer;
+  // Set up posts
+  const posts = mongoose.connection.collection('posts');
+
+  const insertedMockUser = await users.findOne({});
+  const mockPost1 = {
+    imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
+    author: insertedMockUser._id,
+    description: 'Frankfurt Botanical Gardens',
+  };
+  const mockPost2 = {
+    imageUrl: 'https://i.postimg.cc/ZRMwQ5kK/alpine.webp',
+    author: insertedMockUser._id,
+    description: 'Alpine stream',
+  };
+  await posts.insertMany([mockPost1, mockPost2]);
+
+  return { mockUser };
 }
 
 async function stopMemoryMongoServer() {
