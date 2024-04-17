@@ -8,18 +8,20 @@ const userSchema = require('../models/express-validator-schemas/user');
 
 exports.getUser = asyncHandler(async (req, res) => {
   try {
-    const foundUser = await findUser(req.params.username);
+    const foundUser = await findUser(req.params.username.toLowerCase());
     if (!foundUser) {
       return res
         .status(404)
         .send({ errors: [{ title: 'User does not exist' }] });
     }
     const user = {
-      // _id: foundUser._id,
+      _id: foundUser._id,
       username: foundUser.username,
-      // dateCreated: foundUser.dateCreated,
-      // friends: foundUser.friends,
-      // isBot: foundUser.isBot,
+      normalizedUsername: foundUser.normalizedUsername,
+      dateCreated: foundUser.dateCreated,
+      friends: foundUser.friends,
+      followers: foundUser.followers,
+      isBot: foundUser.isBot,
     };
     return res.send(user);
   } catch (error) {
@@ -29,18 +31,38 @@ exports.getUser = asyncHandler(async (req, res) => {
   }
 });
 
-exports.signUp = asyncHandler(async (req, res, next) => {
-  const user = new User({
-    username: req.body.username,
-  });
+exports.signUp = [
+  checkSchema(userSchema),
 
-  // Encrypt password
-  try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    user.password = hashedPassword;
-    await user.save();
-  } catch (error) {
-    next(error);
-  }
-  res.send();
-});
+  asyncHandler(async (req, res, next) => {
+    const normalizedUsername = req.body.username.toLowerCase();
+    const foundUser = await findUser(normalizedUsername);
+
+    if (foundUser)
+      return res
+        .status(409)
+        .send({ errors: [{ title: 'Username is already taken.' }] });
+    return next();
+  }),
+
+  asyncHandler(async (req, res, next) => {
+    respondOnValidationError(req, res, next);
+  }),
+
+  asyncHandler(async (req, res, next) => {
+    const user = new User({
+      username: req.body.username,
+      normalizedUsername: req.body.username.toLowerCase(),
+    });
+
+    // Encrypt password
+    try {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      user.password = hashedPassword;
+      await user.save();
+    } catch (error) {
+      next(error);
+    }
+    res.send();
+  }),
+];

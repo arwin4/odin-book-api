@@ -12,6 +12,7 @@ async function startMemoryMongoServer() {
   mongoose.connection.createCollection('users');
   const mockUser = {
     username: 'testUser',
+    normalizedUsername: 'testuser',
   };
 
   const { users } = collections;

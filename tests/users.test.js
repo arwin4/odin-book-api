@@ -44,10 +44,80 @@ describe('Users API', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body.username).toBe('testUser');
+    expect(res.body.normalizedUsername).toBe('testuser');
+    expect(res.body._id).toBeTruthy();
+    expect(res.body.friends).toBeTruthy();
+    expect(res.body.followers).toBeTruthy();
+    expect(res.body.isBot).toBe(false);
   });
 
   describe('Signup', () => {
-    test('creates user', async () => {
+    it('fails if password too short', async () => {
+      const res = await request(app)
+        .post('/')
+        .type('form')
+        .send({ username: 'signup' })
+        .send({ password: 'ab' });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('fails if password too long', async () => {
+      const res = await request(app)
+        .post('/')
+        .type('form')
+        .send({ username: 'signup' })
+        .send({
+          password:
+            'this-password-is-over-64-characters-long-oh-noooooooooooooooooooo',
+        });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('fails if username too long', async () => {
+      const res = await request(app)
+        .post('/')
+        .type('form')
+        .send({ username: 'this-username-is-over-twenty-characters-long' })
+        .send({ password: 'abc' });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    describe('Refuses duplicate usernames', () => {
+      it('same case', async () => {
+        const res = await request(app)
+          .post('/')
+          .type('form')
+          .send({ username: 'testUser' })
+          .send({ password: 'abc' });
+
+        expect(res.statusCode).toBe(409);
+      });
+
+      it('uppercase', async () => {
+        const res = await request(app)
+          .post('/')
+          .type('form')
+          .send({ username: 'TESTUSER' })
+          .send({ password: 'abc' });
+
+        expect(res.statusCode).toBe(409);
+      });
+
+      it('lowercase', async () => {
+        const res = await request(app)
+          .post('/')
+          .type('form')
+          .send({ username: 'testuser' })
+          .send({ password: 'abc' });
+
+        expect(res.statusCode).toBe(409);
+      });
+    });
+
+    it('creates user', async () => {
       const res = await request(app)
         .post('/')
         .type('form')
@@ -55,10 +125,6 @@ describe('Users API', () => {
         .send({ password: 'abc' });
 
       expect(res.statusCode).toBe(200);
-
-      // const signedUpUser = await users.findOne({ username: 'signup' });
-      // console.log(signedUpUser);
-      // expect(await users.countDocuments({})).toBe(2);
     });
   });
 });
