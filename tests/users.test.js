@@ -151,7 +151,7 @@ describe('Signup', () => {
     });
   });
 
-  it('creates user', async () => {
+  it('accepts new user', async () => {
     const res = await request(app)
       .post('/')
       .type('form')
