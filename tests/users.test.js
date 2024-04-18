@@ -7,11 +7,20 @@ const {
   stopMemoryMongoServer,
 } = require('./memoryMongoServer');
 const User = require('../models/user');
+const mockUser = require('./mocks/user');
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
 app.use('/', user);
+
+// Mock auth
+jest.mock('../passport/verifyAuth', () =>
+  jest.fn((req, res, next) => {
+    req.user = mockUser;
+    return next();
+  }),
+);
 
 // Completely tear down and set up between every test
 beforeEach(async () => {

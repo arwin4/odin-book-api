@@ -5,7 +5,9 @@ const cors = require('cors');
 const express = require('express');
 const path = require('path');
 const logger = require('morgan');
+const passport = require('passport');
 const { startMemoryMongoServer } = require('./tests/memoryMongoServer');
+const User = require('./models/user');
 
 const app = express();
 
@@ -23,6 +25,27 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+/* == Passport == */
+app.use(passport.initialize());
+app.use(passport.session());
+
+const jwtStrategy = require('./passport/strategies/jwt');
+
+passport.use(jwtStrategy);
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
+});
 
 // Routes
 const userRouter = require('./routes/user');

@@ -1,5 +1,6 @@
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
+const mockUser = require('./mocks/user');
 
 let mongoServer;
 
@@ -11,11 +12,6 @@ async function startMemoryMongoServer() {
   // Set up users. MongoDB creates the collection implicitly when referenced.
   const users = mongoose.connection.collection('users');
 
-  const mockUser = {
-    username: 'testUser',
-    normalizedUsername: 'testuser',
-    firstName: 'Paula',
-  };
   await users.insertOne(mockUser);
 
   // Set up posts

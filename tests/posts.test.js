@@ -2,16 +2,24 @@ const express = require('express');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const post = require('../routes/post');
-
 const {
   startMemoryMongoServer,
   stopMemoryMongoServer,
 } = require('./memoryMongoServer');
+const mockUser = require('./mocks/user');
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
 app.use('/', post);
+
+// Mock auth
+jest.mock('../passport/verifyAuth', () =>
+  jest.fn((req, res, next) => {
+    req.user = mockUser;
+    return next();
+  }),
+);
 
 // Completely tear down and set up between every test
 beforeEach(async () => {

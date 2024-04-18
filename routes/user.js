@@ -1,5 +1,6 @@
 const express = require('express');
 const userController = require('../controllers/userController');
+const verifyAuth = require('../passport/verifyAuth');
 
 const router = express.Router();
 
@@ -9,8 +10,9 @@ router.get('/test', (req, res) => {
 });
 
 // Get user
-router.get('/:username', userController.getUser);
+router.get('/:username', verifyAuth, userController.getUser);
 
+// Sign up user
 router.post('/', userController.signUp);
 
 module.exports = router;
