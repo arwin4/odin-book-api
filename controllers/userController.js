@@ -65,6 +65,19 @@ exports.signUp = [
     } catch (error) {
       next(error);
     }
-    res.send();
+    res.status(201).send({
+      data: {
+        type: 'users',
+        id: user._id,
+        attributes: {
+          username: user.username,
+          normalizedUsername: user.normalizedUsername,
+          firstName: user.firstName,
+          followers: user.followers,
+          friends: user.friends,
+          dateCreated: user.dateCreated,
+        },
+      },
+    });
   }),
 ];

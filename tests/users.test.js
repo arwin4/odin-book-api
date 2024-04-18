@@ -177,7 +177,25 @@ describe('Signup', () => {
       .send({ firstName: 'Ness' })
       .send({ password: 'abc' });
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
+
+    const expectedItem = {
+      data: {
+        type: 'users',
+        id: expect.anything(),
+        attributes: {
+          username: expect.anything(),
+          normalizedUsername: expect.anything(),
+          firstName: expect.anything(),
+          followers: expect.anything(),
+          friends: expect.anything(),
+          dateCreated: expect.anything(),
+          password: undefined,
+        },
+      },
+    };
+    expect(res.body).toEqual(expectedItem);
+
     expect(await User.countDocuments({})).toBe(2);
   });
 });
