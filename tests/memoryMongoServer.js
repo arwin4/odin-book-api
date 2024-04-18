@@ -26,6 +26,7 @@ async function startMemoryMongoServer() {
     imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
     author: insertedMockUser._id,
     description: 'Frankfurt Botanical Gardens',
+    likes: [insertedMockUser._id],
   };
   const mockPost2 = {
     imageUrl: 'https://i.postimg.cc/ZRMwQ5kK/alpine.webp',

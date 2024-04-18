@@ -29,3 +29,29 @@ describe('Verify test db setup', () => {
     expect(await posts.countDocuments({})).toBe(2);
   });
 });
+
+describe('Get post', () => {
+  it('gets test posts', async () => {
+    const res = await request(app).get('/');
+
+    const expectedItem = {
+      data: [
+        {
+          type: 'posts',
+          id: expect.anything(),
+          attributes: {
+            imageUrl: expect.anything(),
+            author: expect.anything(),
+            likes: expect.anything(),
+            description: expect.anything(),
+            dateCreated: expect.anything(),
+          },
+        },
+      ],
+    };
+
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.body).toHaveLength(2);
+    expect(res.body).toContainEqual(expectedItem);
+  });
+});
