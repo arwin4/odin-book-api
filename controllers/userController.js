@@ -54,6 +54,7 @@ exports.signUp = [
     const user = new User({
       username: req.body.username,
       normalizedUsername: req.body.username.toLowerCase(),
+      firstName: req.body.firstName,
     });
 
     // Encrypt password
