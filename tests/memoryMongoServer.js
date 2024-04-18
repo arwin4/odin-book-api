@@ -9,7 +9,7 @@ async function startMemoryMongoServer() {
   await mongoose.connect(mongoUri);
 
   // Set up users. MongoDB creates the collection implicitly when referenced.
-  const { users } = mongoose.connection.collections;
+  const users = mongoose.connection.collection('users');
 
   const mockUser = {
     username: 'testUser',
