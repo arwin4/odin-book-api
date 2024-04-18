@@ -6,6 +6,7 @@ const {
   startMemoryMongoServer,
   stopMemoryMongoServer,
 } = require('./memoryMongoServer');
+const User = require('../models/user');
 
 const app = express();
 
@@ -21,18 +22,16 @@ afterEach(async () => {
   await stopMemoryMongoServer();
 });
 
-const { users } = mongoose.connection.collections;
-
 describe('Verify test db setup', () => {
   it('finds the inserted test user in the db', async () => {
-    expect(await users.findOne({ username: 'testUser' })).toHaveProperty(
+    expect(await User.findOne({ username: 'testUser' })).toHaveProperty(
       'username',
       'testUser',
     );
   });
 
   it('finds no other documents other than the inserted one', async () => {
-    expect(await users.countDocuments({})).toBe(1);
+    expect(await User.countDocuments({})).toBe(1);
   });
 });
 
@@ -57,6 +56,7 @@ describe('Get user', () => {
 
 describe('Signup', () => {
   it('fails if no username is provided', async () => {
+    expect(await User.countDocuments({})).toBe(1);
     const res = await request(app)
       .post('/')
       .type('form')
@@ -64,9 +64,11 @@ describe('Signup', () => {
       .send({ password: 'abc' });
 
     expect(res.statusCode).toBe(400);
+    expect(await User.countDocuments({})).toBe(1);
   });
 
   it('fails if no password is provided', async () => {
+    expect(await User.countDocuments({})).toBe(1);
     const res = await request(app)
       .post('/')
       .type('form')
@@ -74,9 +76,11 @@ describe('Signup', () => {
       .send({ firstName: 'Ness' });
 
     expect(res.statusCode).toBe(400);
+    expect(await User.countDocuments({})).toBe(1);
   });
 
   it('fails if no first name is provided', async () => {
+    expect(await User.countDocuments({})).toBe(1);
     const res = await request(app)
       .post('/')
       .type('form')
@@ -84,9 +88,11 @@ describe('Signup', () => {
       .send({ password: 'abc' });
 
     expect(res.statusCode).toBe(400);
+    expect(await User.countDocuments({})).toBe(1);
   });
 
   it('fails if password too short', async () => {
+    expect(await User.countDocuments({})).toBe(1);
     const res = await request(app)
       .post('/')
       .type('form')
@@ -94,9 +100,11 @@ describe('Signup', () => {
       .send({ password: 'ab' });
 
     expect(res.statusCode).toBe(400);
+    expect(await User.countDocuments({})).toBe(1);
   });
 
   it('fails if password too long', async () => {
+    expect(await User.countDocuments({})).toBe(1);
     const res = await request(app)
       .post('/')
       .type('form')
@@ -107,9 +115,11 @@ describe('Signup', () => {
       });
 
     expect(res.statusCode).toBe(400);
+    expect(await User.countDocuments({})).toBe(1);
   });
 
   it('fails if username too long', async () => {
+    expect(await User.countDocuments({})).toBe(1);
     const res = await request(app)
       .post('/')
       .type('form')
@@ -117,10 +127,12 @@ describe('Signup', () => {
       .send({ password: 'abc' });
 
     expect(res.statusCode).toBe(400);
+    expect(await User.countDocuments({})).toBe(1);
   });
 
   describe('Refuses duplicate usernames', () => {
     it('same case', async () => {
+      expect(await User.countDocuments({})).toBe(1);
       const res = await request(app)
         .post('/')
         .type('form')
@@ -128,9 +140,11 @@ describe('Signup', () => {
         .send({ password: 'abc' });
 
       expect(res.statusCode).toBe(409);
+      expect(await User.countDocuments({})).toBe(1);
     });
 
     it('uppercase', async () => {
+      expect(await User.countDocuments({})).toBe(1);
       const res = await request(app)
         .post('/')
         .type('form')
@@ -138,9 +152,11 @@ describe('Signup', () => {
         .send({ password: 'abc' });
 
       expect(res.statusCode).toBe(409);
+      expect(await User.countDocuments({})).toBe(1);
     });
 
     it('lowercase', async () => {
+      expect(await User.countDocuments({})).toBe(1);
       const res = await request(app)
         .post('/')
         .type('form')
@@ -148,10 +164,12 @@ describe('Signup', () => {
         .send({ password: 'abc' });
 
       expect(res.statusCode).toBe(409);
+      expect(await User.countDocuments({})).toBe(1);
     });
   });
 
   it('accepts new user', async () => {
+    expect(await User.countDocuments({})).toBe(1);
     const res = await request(app)
       .post('/')
       .type('form')
@@ -160,5 +178,6 @@ describe('Signup', () => {
       .send({ password: 'abc' });
 
     expect(res.statusCode).toBe(200);
+    expect(await User.countDocuments({})).toBe(2);
   });
 });
