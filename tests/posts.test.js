@@ -2,6 +2,7 @@ const express = require('express');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const post = require('../routes/post');
+const Post = require('../models/post');
 const {
   startMemoryMongoServer,
   stopMemoryMongoServer,
@@ -61,5 +62,41 @@ describe('Get post', () => {
     expect(res.body).toBeInstanceOf(Array);
     expect(res.body).toHaveLength(2);
     expect(res.body).toContainEqual(expectedItem);
+  });
+  it('saves a new post', async () => {
+    expect(await Post.countDocuments({})).toBe(2);
+
+    // frontend:
+    // TODO: must correctly handle <10MiB files and warn for bigger ones
+    //  Await upload to cloudinary
+    // https://cloudinary.com/documentation/client_side_uploading#code_explorer_upload_multiple_files_using_a_form_unsigned
+    // then forward url and other info to post('/')
+
+    const res = await request(app)
+      .post('/')
+      .type('form')
+      .send({
+        imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
+      })
+      .send({ description: 'Test description' });
+
+    expect(res.statusCode).toBe(201);
+
+    const expectedRes = {
+      data: {
+        type: 'posts',
+        id: expect.anything(),
+        attributes: {
+          imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
+          author: expect.anything(),
+          likes: [],
+          description: 'Test description',
+          dateCreated: expect.anything(),
+        },
+      },
+    };
+
+    expect(res.body).toEqual(expectedRes);
+    expect(await Post.countDocuments({})).toBe(3);
   });
 });

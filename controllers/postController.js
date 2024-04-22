@@ -26,3 +26,31 @@ exports.getPosts = asyncHandler(async (req, res) => {
 
   return res.send(latestPosts);
 });
+
+exports.postPost = asyncHandler(async (req, res, next) => {
+  let post;
+  try {
+    post = new Post({
+      imageUrl: req.body.imageUrl,
+      author: req.user._id,
+      description: req.body.description,
+    });
+    await post.save();
+  } catch (error) {
+    next(error);
+  }
+
+  res.status(201).send({
+    data: {
+      type: 'posts',
+      id: post._id,
+      attributes: {
+        imageUrl: post.imageUrl,
+        author: post.author,
+        description: post.description,
+        likes: post.likes,
+        dateCreated: post.dateCreated,
+      },
+    },
+  });
+});

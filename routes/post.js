@@ -7,4 +7,7 @@ const router = express.Router();
 // Get 50 latest posts
 router.get('/', verifyAuth, postController.getPosts);
 
+// Post new post
+router.post('/', verifyAuth, postController.postPost);
+
 module.exports = router;
