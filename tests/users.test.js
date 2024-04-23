@@ -52,7 +52,7 @@ describe('Get user', () => {
     expect(res.body.username).toBe('testUser');
     expect(res.body.normalizedUsername).toBe('testuser');
     expect(res.body.firstName).toBe('Paula');
-    expect(mongoose.isValidObjectId(res.body._id)).toBeTruthy();
+    expect(mongoose.isValidObjectId(res.body._id)).toBe(true);
     expect(res.body.friends).toBeTruthy();
     expect(res.body.followers).toBeTruthy();
     expect(res.body.isBot).toBe(false);
