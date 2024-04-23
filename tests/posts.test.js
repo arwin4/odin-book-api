@@ -58,6 +58,9 @@ describe('Get post', () => {
     expect(res.body.data).toHaveLength(2);
     expect(res.body.data).toContainEqual(expectedRes);
   });
+});
+
+describe('Post post', () => {
   it('saves a new post', async () => {
     expect(await Post.countDocuments({})).toBe(2);
 
