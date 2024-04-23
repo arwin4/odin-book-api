@@ -55,6 +55,7 @@ describe('Get post', () => {
       },
     };
 
+    expect(res.body.data).toBeInstanceOf(Array);
     expect(res.body.data).toHaveLength(2);
     expect(res.body.data).toContainEqual(expectedRes);
   });
