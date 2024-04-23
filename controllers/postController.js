@@ -21,6 +21,31 @@ exports.getPosts = asyncHandler(async (req, res) => {
   return res.send(resObj);
 });
 
+exports.getPostById = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+
+  let post;
+  try {
+    post = await Post.findById(postId);
+  } catch (err) {
+    res.sendStatus(404);
+  }
+
+  res.send({
+    data: {
+      type: 'posts',
+      id: post.id,
+      attributes: {
+        imageUrl: post.imageUrl,
+        author: post.author,
+        likes: post.likes,
+        description: post.description,
+        dateCreated: post.dateCreated,
+      },
+    },
+  });
+});
+
 exports.postPost = asyncHandler(async (req, res, next) => {
   let post;
   try {

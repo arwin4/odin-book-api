@@ -58,6 +58,33 @@ describe('Get post', () => {
     expect(res.body.data).toHaveLength(2);
     expect(res.body.data).toContainEqual(expectedRes);
   });
+  it('gets post by ID', async () => {
+    const currentPost = await Post.findOne();
+    const postId = currentPost.id;
+
+    const res = await request(app).get(`/${postId}`);
+    expect(res.status).toBe(200);
+
+    const expectedRes = {
+      data: {
+        type: 'posts',
+        id: expect.anything(),
+        attributes: {
+          imageUrl: expect.anything(),
+          author: expect.anything(),
+          likes: expect.anything(),
+          description: expect.anything(),
+          dateCreated: expect.anything(),
+        },
+      },
+    };
+
+    expect(res.body).toEqual(expectedRes);
+  });
+  it('returns 404 for nonexistent post', async () => {
+    const res = await request(app).get('/non-existent');
+    expect(res.status).toBe(404);
+  });
 });
 
 describe('Post post', () => {

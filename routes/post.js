@@ -9,6 +9,9 @@ const router = express.Router();
 // Get 50 latest posts
 router.get('/', verifyAuth, postController.getPosts);
 
+// Get post by ID
+router.get('/:postId', verifyAuth, postController.getPostById);
+
 // Post new post
 router.post('/', verifyAuth, postController.postPost);
 
