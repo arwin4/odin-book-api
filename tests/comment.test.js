@@ -124,4 +124,14 @@ describe('Post comment', () => {
       }),
     ).toBe(1);
   });
+  it('returns 404 for nonexistent post', async () => {
+    const res = await request(app)
+      .post('/non-existent/comments')
+      .type('form')
+      .send({
+        content: 'This is a new comment',
+      });
+
+    expect(res.status).toBe(404);
+  });
 });
