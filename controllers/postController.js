@@ -24,6 +24,7 @@ exports.getPosts = asyncHandler(async (req, res) => {
 exports.postPost = asyncHandler(async (req, res, next) => {
   let post;
   try {
+    // TODO: add validation & sanitization
     post = new Post({
       imageUrl: req.body.imageUrl,
       author: req.user._id,
