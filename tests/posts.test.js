@@ -43,25 +43,20 @@ describe('Get post', () => {
   it('gets test posts', async () => {
     const res = await request(app).get('/');
 
-    const expectedItem = {
-      data: [
-        {
-          type: 'posts',
-          id: expect.anything(),
-          attributes: {
-            imageUrl: expect.anything(),
-            author: expect.anything(),
-            likes: expect.anything(),
-            description: expect.anything(),
-            dateCreated: expect.anything(),
-          },
-        },
-      ],
+    const expectedRes = {
+      type: 'posts',
+      id: expect.anything(),
+      attributes: {
+        imageUrl: expect.anything(),
+        author: expect.anything(),
+        likes: expect.anything(),
+        description: expect.anything(),
+        dateCreated: expect.anything(),
+      },
     };
 
-    expect(res.body).toBeInstanceOf(Array);
-    expect(res.body).toHaveLength(2);
-    expect(res.body).toContainEqual(expectedItem);
+    expect(res.body.data).toHaveLength(2);
+    expect(res.body.data).toContainEqual(expectedRes);
   });
   it('saves a new post', async () => {
     expect(await Post.countDocuments({})).toBe(2);
