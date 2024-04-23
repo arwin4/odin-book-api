@@ -86,3 +86,42 @@ describe('Get comment by post ID', () => {
     expect(res.body).toEqual({ data: [] });
   });
 });
+
+describe('Post comment', () => {
+  it('saves a new comment', async () => {
+    const currentPost = await Post.findOne({
+      description: 'This post has no comments',
+    });
+    const postId = currentPost.id;
+
+    const res = await request(app)
+      .post(`/${postId}/comments`)
+      .type('form')
+      .send({
+        content: 'This is a new comment',
+      });
+
+    expect(res.statusCode).toBe(201);
+
+    const expectedRes = {
+      data: {
+        type: 'comments',
+        id: expect.anything(),
+        attributes: {
+          post: postId,
+          content: 'This is a new comment',
+          author: expect.anything(),
+          likes: [],
+          dateCreated: expect.anything(),
+        },
+      },
+    };
+
+    expect(res.body).toEqual(expectedRes);
+    expect(
+      await Post.countDocuments({
+        description: 'This post has no comments',
+      }),
+    ).toBe(1);
+  });
+});

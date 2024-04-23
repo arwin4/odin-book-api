@@ -24,3 +24,33 @@ exports.getComments = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 });
+
+exports.postComment = asyncHandler(async (req, res, next) => {
+  const { postId } = req.params;
+  let comment;
+  try {
+    // TODO: add validation & sanitization
+    comment = new Comment({
+      post: postId,
+      content: req.body.content,
+      author: req.user._id,
+    });
+    await comment.save();
+
+    res.status(201).send({
+      data: {
+        type: 'comments',
+        id: comment._id,
+        attributes: {
+          post: comment.post,
+          author: comment.author,
+          content: comment.content,
+          likes: comment.likes,
+          dateCreated: comment.dateCreated,
+        },
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});

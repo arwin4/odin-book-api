@@ -17,4 +17,7 @@ router.post('/', verifyAuth, postController.postPost);
 // Get all comments on a post
 router.get('/:postId/comments', verifyAuth, commentController.getComments);
 
+// Post new comment
+router.post('/:postId/comments', verifyAuth, commentController.postComment);
+
 module.exports = router;
