@@ -146,14 +146,39 @@ describe('Post comment', () => {
   });
 });
 
-describe.skip('Delete comment by comment ID', () => {
-  it('returns 403 if user is not the author', () => {
-    throw new Error();
+describe('Delete comment by comment ID', () => {
+  it('returns 403 if user is not the author', async () => {
+    // Test comment 2 was left by mockUser2
+    const comment = await Comment.findOne({ content: 'Test comment 2' });
+    const postId = comment.post;
+    const commentId = comment._id;
+    expect(await Comment.find({ post: postId }).countDocuments()).toBe(2);
+
+    const res = await request(app).delete(`/${postId}/comments/${commentId}`);
+    expect(res.status).toBe(403);
+    expect(await Comment.find({ post: postId }).countDocuments()).toBe(2);
   });
-  it('returns 404 if post does not exist', () => {
-    throw new Error();
+  it('returns 404 if post does not exist', async () => {
+    const res = await request(app).delete(
+      `/does-not-exist/comments/does-not-exist`,
+    );
+    expect(res.status).toBe(404);
   });
-  it('deletes the comment', () => {
-    throw new Error();
+  it('returns 404 if comment does not exist (post does exist)', async () => {
+    const comment = await Comment.findOne({ content: 'Test comment 1' });
+    const postId = comment.post;
+
+    const res = await request(app).delete(`/${postId}/comments/does-not-exist`);
+    expect(res.status).toBe(404);
+  });
+  it('deletes the comment', async () => {
+    const comment = await Comment.findOne({ content: 'Test comment 1' });
+    const postId = comment.post;
+    const commentId = comment._id;
+    expect(await Comment.find({ post: postId }).countDocuments()).toBe(2);
+
+    const res = await request(app).delete(`/${postId}/comments/${commentId}`);
+    expect(res.status).toBe(200);
+    expect(await Comment.find({ post: postId }).countDocuments()).toBe(1);
   });
 });

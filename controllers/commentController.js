@@ -62,3 +62,27 @@ exports.postComment = asyncHandler(async (req, res, next) => {
     next(error);
   }
 });
+
+exports.deleteComment = asyncHandler(async (req, res, next) => {
+  const { postId, commentId } = req.params;
+  let comment;
+
+  try {
+    await Post.findById(postId);
+    comment = await Comment.findById(commentId);
+  } catch (err) {
+    return res.sendStatus(404);
+  }
+
+  if (comment.author.toString() !== req.user._id.toString()) {
+    return res.sendStatus(403);
+  }
+
+  try {
+    await comment.deleteOne();
+  } catch (err) {
+    return next(err);
+  }
+
+  return res.sendStatus(200);
+});

@@ -23,4 +23,11 @@ router.get('/:postId/comments', verifyAuth, commentController.getComments);
 // Post new comment
 router.post('/:postId/comments', verifyAuth, commentController.postComment);
 
+// Delete comment by ID
+router.delete(
+  '/:postId/comments/:commentId',
+  verifyAuth,
+  commentController.deleteComment,
+);
+
 module.exports = router;
