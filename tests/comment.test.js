@@ -11,6 +11,8 @@ const mockUser = require('./mocks/user');
 
 const app = express();
 
+// Must use json middleware to deserialize (nested) json
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/', post);
 
@@ -96,9 +98,13 @@ describe('Post comment', () => {
 
     const res = await request(app)
       .post(`/${postId}/comments`)
-      .type('form')
       .send({
-        content: 'This is a new comment',
+        data: {
+          type: 'comments',
+          attributes: {
+            content: 'This is a new comment',
+          },
+        },
       });
 
     expect(res.statusCode).toBe(201);
@@ -127,9 +133,13 @@ describe('Post comment', () => {
   it('returns 404 for nonexistent post', async () => {
     const res = await request(app)
       .post('/non-existent/comments')
-      .type('form')
       .send({
-        content: 'This is a new comment',
+        data: {
+          type: 'comments',
+          attributes: {
+            content: 'This is a new comment',
+          },
+        },
       });
 
     expect(res.status).toBe(404);

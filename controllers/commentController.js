@@ -40,7 +40,7 @@ exports.postComment = asyncHandler(async (req, res, next) => {
     // TODO: add validation & sanitization
     comment = new Comment({
       post: postId,
-      content: req.body.content,
+      content: req.body.data.attributes.content,
       author: req.user._id,
     });
     await comment.save();
