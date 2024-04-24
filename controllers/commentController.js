@@ -29,13 +29,6 @@ exports.getComments = asyncHandler(async (req, res, next) => {
 exports.postComment = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
   let comment;
-
-  try {
-    await Post.findById(postId);
-  } catch (err) {
-    res.sendStatus(404);
-  }
-
   try {
     // TODO: add validation & sanitization
     comment = new Comment({

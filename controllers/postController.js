@@ -24,13 +24,7 @@ exports.getPosts = asyncHandler(async (req, res) => {
 
 exports.getPostById = asyncHandler(async (req, res) => {
   const { postId } = req.params;
-
-  let post;
-  try {
-    post = await Post.findById(postId);
-  } catch (err) {
-    res.sendStatus(404);
-  }
+  const post = await Post.findById(postId);
 
   res.send({
     data: {
@@ -78,13 +72,7 @@ exports.postPost = asyncHandler(async (req, res, next) => {
 
 exports.deletePost = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
-  let post;
-
-  try {
-    post = await Post.findById(postId);
-  } catch (err) {
-    return res.sendStatus(404);
-  }
+  const post = await Post.findById(postId);
 
   if (post.author.toString() !== req.user._id.toString()) {
     return res.sendStatus(403);
