@@ -51,9 +51,9 @@ exports.postPost = asyncHandler(async (req, res, next) => {
   try {
     // TODO: add validation & sanitization
     post = new Post({
-      imageUrl: req.body.imageUrl,
+      imageUrl: req.body.data.attributes.imageUrl,
       author: req.user._id,
-      description: req.body.description,
+      description: req.body.data.attributes.description,
     });
     await post.save();
   } catch (error) {

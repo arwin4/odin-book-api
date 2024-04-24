@@ -11,6 +11,7 @@ const { mockUser1 } = require('./mocks/users');
 
 const app = express();
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/', post);
 
@@ -100,11 +101,15 @@ describe('Post post', () => {
 
     const res = await request(app)
       .post('/')
-      .type('form')
       .send({
-        imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
-      })
-      .send({ description: 'Test description' });
+        data: {
+          type: 'posts',
+          attributes: {
+            imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
+            description: 'Test description',
+          },
+        },
+      });
 
     expect(res.statusCode).toBe(201);
 
