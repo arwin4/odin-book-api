@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Post = require('../models/post');
+const Comment = require('../models/comment');
 
 exports.getPosts = asyncHandler(async (req, res) => {
   const foundPosts = await Post.find().sort({ createdAt: -1 }).limit(50);
@@ -73,4 +74,28 @@ exports.postPost = asyncHandler(async (req, res, next) => {
       },
     },
   });
+});
+
+exports.deletePost = asyncHandler(async (req, res, next) => {
+  const { postId } = req.params;
+  let post;
+
+  try {
+    post = await Post.findById(postId);
+  } catch (err) {
+    return res.sendStatus(404);
+  }
+
+  if (post.author.toString() !== req.user._id.toString()) {
+    return res.sendStatus(403);
+  }
+
+  try {
+    await post.deleteOne();
+    await Comment.deleteMany({ post: postId });
+  } catch (err) {
+    return next(err);
+  }
+
+  return res.sendStatus(200);
 });

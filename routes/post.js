@@ -15,6 +15,9 @@ router.get('/:postId', verifyAuth, postController.getPostById);
 // Post new post
 router.post('/', verifyAuth, postController.postPost);
 
+// Delete post and its comments
+router.delete('/:postId', verifyAuth, postController.deletePost);
+
 /* == COMMENTS == */
 
 // Get all comments on a post

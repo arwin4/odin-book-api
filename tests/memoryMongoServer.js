@@ -29,7 +29,7 @@ async function startMemoryMongoServer() {
   };
   const mockPost2 = {
     imageUrl: 'https://i.postimg.cc/ZRMwQ5kK/alpine.webp',
-    author: insertedMockUser1._id,
+    author: insertedMockUser2._id,
     description: 'This post has no comments',
   };
   await posts.insertMany([mockPost1, mockPost2]);

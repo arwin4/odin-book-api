@@ -8,6 +8,7 @@ const {
   stopMemoryMongoServer,
 } = require('./memoryMongoServer');
 const { mockUser1 } = require('./mocks/users');
+const Comment = require('../models/comment');
 
 const app = express();
 
@@ -129,5 +130,38 @@ describe('Post post', () => {
 
     expect(res.body).toEqual(expectedRes);
     expect(await Post.countDocuments({})).toBe(3);
+  });
+});
+
+describe('Delete post', () => {
+  it('returns 403 if user is not the author', async () => {
+    // This post was by mockUser2, not mockUser1
+    const postToDelete = await Post.findOne({
+      description: 'This post has no comments',
+    });
+    const postId = postToDelete._id;
+    expect(await Post.findById(postId)).toBeTruthy();
+
+    const res = await request(app).delete(`/${postId}`);
+    expect(res.status).toBe(403);
+    expect(await Post.findById(postId)).toBeTruthy();
+  });
+  it('returns 404 if post does not exist', async () => {
+    const res = await request(app).delete('/does-not-exist');
+    expect(res.status).toBe(404);
+  });
+  it('deletes the post and its comments', async () => {
+    const postToDelete = await Post.findOne({
+      description: 'This post has 2 comments',
+    });
+    const postId = postToDelete._id;
+
+    expect(await Post.findById(postId)).toBeTruthy();
+    expect(await Comment.find({ post: postId }).countDocuments()).not.toBe(0);
+
+    const res = await request(app).delete(`/${postId}`);
+    expect(res.status).toBe(200);
+    expect(await Post.findById(postId)).toBeFalsy();
+    expect(await Comment.find({ post: postId }).countDocuments()).toBe(0);
   });
 });
