@@ -7,7 +7,7 @@ const {
   startMemoryMongoServer,
   stopMemoryMongoServer,
 } = require('./memoryMongoServer');
-const mockUser = require('./mocks/user');
+const { mockUser1 } = require('./mocks/users');
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use('/', post);
 // Mock auth
 jest.mock('../passport/verifyAuth', () =>
   jest.fn((req, res, next) => {
-    req.user = mockUser;
+    req.user = mockUser1;
     return next();
   }),
 );

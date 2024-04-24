@@ -7,7 +7,7 @@ const {
 const post = require('../routes/post');
 const Comment = require('../models/comment');
 const Post = require('../models/post');
-const mockUser = require('./mocks/user');
+const { mockUser1 } = require('./mocks/users');
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.use('/', post);
 // Mock auth
 jest.mock('../passport/verifyAuth', () =>
   jest.fn((req, res, next) => {
-    req.user = mockUser;
+    req.user = mockUser1;
     return next();
   }),
 );
@@ -143,5 +143,17 @@ describe('Post comment', () => {
       });
 
     expect(res.status).toBe(404);
+  });
+});
+
+describe.skip('Delete comment by comment ID', () => {
+  it('returns 403 if user is not the author', () => {
+    throw new Error();
+  });
+  it('returns 404 if post does not exist', () => {
+    throw new Error();
+  });
+  it('deletes the comment', () => {
+    throw new Error();
   });
 });
