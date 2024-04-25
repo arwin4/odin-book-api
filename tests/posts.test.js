@@ -50,10 +50,16 @@ describe('Get post', () => {
       id: expect.anything(),
       attributes: {
         imageUrl: expect.anything(),
-        author: expect.anything(),
-        likes: expect.anything(),
         description: expect.anything(),
         dateCreated: expect.anything(),
+      },
+      relationships: {
+        author: {
+          data: { type: 'users', id: expect.anything() },
+        },
+        likes: {
+          data: [{ type: 'likes', id: expect.anything() }],
+        },
       },
     };
 
@@ -74,10 +80,16 @@ describe('Get post', () => {
         id: expect.anything(),
         attributes: {
           imageUrl: expect.anything(),
-          author: expect.anything(),
-          likes: expect.anything(),
           description: expect.anything(),
           dateCreated: expect.anything(),
+        },
+        relationships: {
+          author: {
+            data: { type: 'users', id: expect.anything() },
+          },
+          likes: {
+            data: [{ type: 'likes', id: expect.anything() }],
+          },
         },
       },
     };
@@ -120,10 +132,14 @@ describe('Post post', () => {
         id: expect.anything(),
         attributes: {
           imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
-          author: expect.anything(),
-          likes: [],
           description: 'Test description',
           dateCreated: expect.anything(),
+        },
+        relationships: {
+          author: {
+            data: { type: 'users', id: expect.anything() },
+          },
+          likes: { data: [] },
         },
       },
     };

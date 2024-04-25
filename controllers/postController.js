@@ -7,15 +7,20 @@ exports.getPosts = asyncHandler(async (req, res) => {
 
   const resObj = { data: [] };
   foundPosts.forEach((post) => {
+    const likesArray = [];
+    post.likes.forEach((like) => likesArray.push({ type: 'likes', id: like }));
+
     resObj.data.push({
       type: 'posts',
       id: post._id,
       attributes: {
         imageUrl: post.imageUrl,
-        author: post.author,
-        likes: post.likes,
         description: post.description,
         dateCreated: post.dateCreated,
+      },
+      relationships: {
+        author: { data: { type: 'users', id: post.author } },
+        likes: { data: likesArray },
       },
     });
   });
@@ -26,16 +31,21 @@ exports.getPostById = asyncHandler(async (req, res) => {
   const { postId } = req.params;
   const post = await Post.findById(postId);
 
+  const likesArray = [];
+  post.likes.forEach((like) => likesArray.push({ type: 'likes', id: like }));
+
   res.send({
     data: {
       type: 'posts',
-      id: post.id,
+      id: post._id,
       attributes: {
         imageUrl: post.imageUrl,
-        author: post.author,
-        likes: post.likes,
         description: post.description,
         dateCreated: post.dateCreated,
+      },
+      relationships: {
+        author: { data: { type: 'users', id: post.author } },
+        likes: { data: likesArray },
       },
     },
   });
@@ -55,16 +65,23 @@ exports.postPost = asyncHandler(async (req, res, next) => {
     next(error);
   }
 
+  const likesArray = [];
+  post.likes.forEach((like) => likesArray.push({ type: 'likes', id: like }));
+
   res.status(201).send({
     data: {
       type: 'posts',
       id: post._id,
       attributes: {
         imageUrl: post.imageUrl,
-        author: post.author,
         description: post.description,
-        likes: post.likes,
         dateCreated: post.dateCreated,
+      },
+      relationships: {
+        author: {
+          data: { type: 'users', id: post.author },
+        },
+        likes: { data: likesArray },
       },
     },
   });
