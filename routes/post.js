@@ -1,6 +1,7 @@
 const express = require('express');
 const postController = require('../controllers/postController');
 const commentController = require('../controllers/commentController');
+const likesController = require('../controllers/likesController');
 const verifyAuth = require('../passport/verifyAuth');
 const checkPostExistence = require('../middleware/checkPostExistence');
 
@@ -54,5 +55,22 @@ router.delete(
   checkPostExistence,
   commentController.deleteComment,
 );
+
+/* == LIKES == */
+// Like a post
+router.post(
+  '/:postId/likes',
+  verifyAuth,
+  checkPostExistence,
+  likesController.addLike,
+);
+
+// Remove one's like from a post
+// router.delete(
+//   '/:postId/likes',
+//   verifyAuth,
+//   checkPostExistence,
+//   likesController.deleteLike,
+// );
 
 module.exports = router;
