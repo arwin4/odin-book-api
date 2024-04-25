@@ -66,11 +66,11 @@ router.post(
 );
 
 // Remove one's like from a post
-// router.delete(
-//   '/:postId/likes',
-//   verifyAuth,
-//   checkPostExistence,
-//   likesController.deleteLike,
-// );
+router.delete(
+  '/:postId/likes',
+  verifyAuth,
+  checkPostExistence,
+  likesController.deleteLike,
+);
 
 module.exports = router;

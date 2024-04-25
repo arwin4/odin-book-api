@@ -54,7 +54,7 @@ describe('Like a post', () => {
     const notYetLikedPost = await Post.findOne({
       description: 'This post has no comments',
     });
-    expect(notYetLikedPost.likes.length).toBe(0);
+    expect(notYetLikedPost.likes.length).toBe(1);
 
     const res = await request(app).post(`/${notYetLikedPost._id}/likes`);
     expect(res.status).toBe(201);
@@ -70,6 +70,35 @@ describe('Like a post', () => {
     const nowLikedPost = await Post.findOne({
       description: 'This post has no comments',
     });
-    expect(nowLikedPost.likes.length).toBe(1);
+    expect(nowLikedPost.likes.length).toBe(2);
+  });
+});
+
+describe('Delete like from a post', () => {
+  it('returns 404 if post does not exist', async () => {
+    const res = await request(app).delete('/does-not-exist/likes');
+    expect(res.status).toBe(404);
+  });
+  it('returns 404 if user has not liked the post', async () => {
+    const notLikedPost = await Post.findOne({
+      description: 'This post has no comments',
+    });
+
+    const res = await request(app).delete(`/${notLikedPost._id}/likes`);
+    expect(res.status).toBe(404);
+  });
+  it('deletes the like', async () => {
+    let likedPost = await Post.findOne({
+      description: 'This post has 2 comments',
+    });
+    expect(likedPost.likes.length).toBe(1);
+
+    const res = await request(app).delete(`/${likedPost._id}/likes`);
+    expect(res.status).toBe(204);
+
+    likedPost = await Post.findOne({
+      description: 'This post has 2 comments',
+    });
+    expect(likedPost.likes.length).toBe(0);
   });
 });
