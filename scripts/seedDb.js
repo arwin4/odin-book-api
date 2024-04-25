@@ -5,6 +5,14 @@ const { mockUser1, mockUser2 } = require('../tests/mocks/users');
 const Post = require('../models/post');
 
 async function seedDb() {
+  // Check if already seeded
+  const collections = await mongoose.connection.listCollections();
+  if (collections.length > 0) {
+    // eslint-disable-next-line no-console
+    console.log('The database has been seeded already.');
+    return;
+  }
+
   // Set up users. MongoDB creates the collection implicitly when referenced.
   const users = mongoose.connection.collection('users');
 
@@ -47,8 +55,6 @@ async function seedDb() {
     content: 'Test comment 2',
   };
   await comments.insertMany([mockComment1, mockComment2]);
-
-  return { mockUser1 };
 }
 
 module.exports = seedDb;

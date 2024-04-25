@@ -96,9 +96,8 @@ if (process.env.NODE_ENV === 'development') {
       if (process.env.SEED_DB === 'true') {
         try {
           console.log('Seeding database...');
-
           await seedDb();
-          console.log('Seeded database.');
+          console.log('Database has been seeded.');
         } catch (err) {
           throw new Error(`Unable to seed database. ${err}`);
         }
