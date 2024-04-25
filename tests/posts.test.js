@@ -1,6 +1,5 @@
 const express = require('express');
 const request = require('supertest');
-const mongoose = require('mongoose');
 const post = require('../routes/post');
 const Post = require('../models/post');
 const {
@@ -33,11 +32,9 @@ afterEach(async () => {
   await stopMemoryMongoServer();
 });
 
-const { posts } = mongoose.connection.collections;
-
 describe('Verify test db setup', () => {
   it('finds the 2 inserted test posts in the db', async () => {
-    expect(await posts.countDocuments({})).toBe(2);
+    expect(await Post.countDocuments({})).toBe(2);
   });
 });
 
