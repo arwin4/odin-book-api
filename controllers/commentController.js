@@ -6,17 +6,29 @@ exports.getComments = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
   try {
     const foundComments = await Comment.find().where('post', postId);
+
     const resObj = { data: [] };
     foundComments.forEach((comment) => {
       resObj.data.push({
         type: 'comments',
         id: comment._id,
         attributes: {
-          post: comment.post,
-          author: comment.author,
-          likes: comment.likes,
           content: comment.content,
           dateCreated: comment.dateCreated,
+        },
+        relationships: {
+          author: {
+            data: {
+              type: 'users',
+              id: comment.author,
+            },
+          },
+          post: {
+            data: {
+              type: 'posts',
+              id: comment.post,
+            },
+          },
         },
       });
     });
@@ -50,11 +62,22 @@ exports.postComment = asyncHandler(async (req, res, next) => {
         type: 'comments',
         id: comment._id,
         attributes: {
-          post: comment.post,
-          author: comment.author,
           content: comment.content,
-          likes: comment.likes,
           dateCreated: comment.dateCreated,
+        },
+        relationships: {
+          author: {
+            data: {
+              type: 'users',
+              id: comment.author,
+            },
+          },
+          post: {
+            data: {
+              type: 'posts',
+              id: comment.post,
+            },
+          },
         },
       },
     });
