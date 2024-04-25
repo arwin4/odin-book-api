@@ -3,11 +3,13 @@
 const createError = require('http-errors');
 const cors = require('cors');
 const express = require('express');
+const mongoose = require('mongoose');
 const path = require('path');
 const logger = require('morgan');
 const passport = require('passport');
 const { startMemoryMongoServer } = require('./tests/memoryMongoServer');
 const User = require('./models/user');
+const seedDb = require('./scripts/seedDb');
 
 const app = express();
 
@@ -73,9 +75,36 @@ app.use((err, req, res) => {
   res.render('error');
 });
 
-if (process.env.NODE_ENV === 'development') startMemoryMongoServer();
-if (process.env.NODE_ENV === 'production') {
-  // ... connect to MongoDB Atlas
+/* == Connect to database == */
+async function connectToMongoAtlas() {
+  try {
+    console.log('Connecting to MongoDB Atlas...');
+    await mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
+    console.log('Succesfully connected to MongoDB Atlas.');
+  } catch (err) {
+    throw new Error(`Unable to connect to MongoDB Atlas. ${err}`);
+  }
+}
+
+if (process.env.NODE_ENV === 'development') {
+  startMemoryMongoServer().then(() =>
+    console.log('Server has finished starting.'),
+  );
+} else if (process.env.NODE_ENV === 'production') {
+  connectToMongoAtlas()
+    .then(async () => {
+      if (process.env.SEED_DB === 'true') {
+        try {
+          console.log('Seeding database...');
+
+          await seedDb();
+          console.log('Seeded database.');
+        } catch (err) {
+          throw new Error(`Unable to seed database. ${err}`);
+        }
+      }
+    })
+    .then(() => console.log('Server has finished starting.'));
 }
 
 module.exports = app;
