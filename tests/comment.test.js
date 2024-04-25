@@ -55,22 +55,44 @@ describe('Get comment by post ID', () => {
           type: 'comments',
           id: expect.anything(),
           attributes: {
-            post: expect.anything(),
-            author: expect.anything(),
-            likes: [],
             content: 'Test comment 1',
             dateCreated: expect.anything(),
+          },
+          relationships: {
+            author: {
+              data: {
+                type: 'users',
+                id: expect.anything(),
+              },
+            },
+            post: {
+              data: {
+                type: 'posts',
+                id: expect.anything(),
+              },
+            },
           },
         },
         {
           type: 'comments',
           id: expect.anything(),
           attributes: {
-            post: expect.anything(),
-            author: expect.anything(),
-            likes: [],
             content: 'Test comment 2',
             dateCreated: expect.anything(),
+          },
+          relationships: {
+            author: {
+              data: {
+                type: 'users',
+                id: expect.anything(),
+              },
+            },
+            post: {
+              data: {
+                type: 'posts',
+                id: expect.anything(),
+              },
+            },
           },
         },
       ],
@@ -114,11 +136,22 @@ describe('Post comment', () => {
         type: 'comments',
         id: expect.anything(),
         attributes: {
-          post: postId,
           content: 'This is a new comment',
-          author: expect.anything(),
-          likes: [],
           dateCreated: expect.anything(),
+        },
+        relationships: {
+          author: {
+            data: {
+              type: 'users',
+              id: expect.anything(),
+            },
+          },
+          post: {
+            data: {
+              type: 'posts',
+              id: postId,
+            },
+          },
         },
       },
     };
