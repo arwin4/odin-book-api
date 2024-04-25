@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-unresolved
+const { faker } = require('@faker-js/faker/locale/en');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 const { mockUser1, mockUser2 } = require('./mocks/users');
@@ -22,13 +24,13 @@ async function startMemoryMongoServer() {
   const insertedMockUser2 = await users.findOne({ username: 'testUser2' });
 
   const mockPost1 = {
-    imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
+    imageUrl: faker.image.url(),
     author: insertedMockUser1._id,
     description: 'This post has 2 comments',
     likes: [insertedMockUser1._id],
   };
   const mockPost2 = {
-    imageUrl: 'https://i.postimg.cc/ZRMwQ5kK/alpine.webp',
+    imageUrl: faker.image.url(),
     author: insertedMockUser2._id,
     description: 'This post has no comments',
     likes: [insertedMockUser2._id],

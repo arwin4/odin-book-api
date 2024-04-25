@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-unresolved
+const { faker } = require('@faker-js/faker/locale/en');
 const express = require('express');
 const request = require('supertest');
 const post = require('../routes/post');
@@ -108,6 +110,7 @@ describe('Post post', () => {
     //  Await upload to cloudinary
     // https://cloudinary.com/documentation/client_side_uploading#code_explorer_upload_multiple_files_using_a_form_unsigned
     // then forward url and other info to post('/')
+    const fakerImageUrl = faker.image.url();
 
     const res = await request(app)
       .post('/')
@@ -115,7 +118,7 @@ describe('Post post', () => {
         data: {
           type: 'posts',
           attributes: {
-            imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
+            imageUrl: fakerImageUrl,
             description: 'Test description',
           },
         },
@@ -128,7 +131,7 @@ describe('Post post', () => {
         type: 'posts',
         id: expect.anything(),
         attributes: {
-          imageUrl: 'https://i.postimg.cc/mr8Y9svB/frankfurt-gardens.webp',
+          imageUrl: fakerImageUrl,
           description: 'Test description',
           dateCreated: expect.anything(),
         },
