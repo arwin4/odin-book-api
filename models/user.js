@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const UserSchema = mongoose.Schema({
   username: {
     type: String,
-    maxLength: [20, 'Username must not exceed 20 characters'],
+    maxLength: [30, 'Username must not exceed 30 characters'],
     required: true,
   },
   normalizedUsername: {
     type: String,
-    maxLength: [20, 'Username must not exceed 20 characters'],
+    maxLength: [30, 'Username must not exceed 30 characters'],
     required: true,
   },
   firstName: {
@@ -20,7 +20,7 @@ const UserSchema = mongoose.Schema({
     type: String,
     minLength: [3, 'Password must be at least 3 characters long'],
     maxLength: [64, 'Password must be not exceed 64 characters'],
-    required: true,
+    // required: true,
   },
   dateCreated: {
     type: Date,
