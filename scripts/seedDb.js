@@ -2,7 +2,16 @@
 const { faker } = require('@faker-js/faker/locale/en');
 const mongoose = require('mongoose');
 const { mockUser1, mockUser2 } = require('../tests/mocks/users');
+const {
+  createRandomUser,
+  createRandomPost,
+  addRandomLikesToPost,
+  createRandomComments,
+} = require('./generateData');
 const Post = require('../models/post');
+const User = require('../models/user');
+const randomIntFromInterval = require('../utils/randomIntFromInterval');
+const Comment = require('../models/comment');
 
 async function seedTestDb() {
   // Set up users. MongoDB creates the collection implicitly when referenced.
@@ -58,48 +67,34 @@ async function seedProductionDb() {
     return;
   }
 
-  // Set up users. MongoDB creates the collection implicitly when referenced.
-  const users = mongoose.connection.collection('users');
+  // Generate 100 users
+  const usersToInsert = [];
+  for (let i = 0; i < 100; i += 1) {
+    usersToInsert.push(createRandomUser());
+  }
 
-  await users.insertMany([mockUser1, mockUser2]);
+  // Generate posts for half of the created users
+  const postsToInsert = [];
+  const usersToAssignPostsTo = usersToInsert.slice(usersToInsert.length / 2);
 
-  // Set up posts
-  const posts = mongoose.connection.collection('posts');
-
-  const insertedMockUser1 = await users.findOne({ username: 'testUser' });
-  const insertedMockUser2 = await users.findOne({ username: 'testUser2' });
-
-  const mockPost1 = {
-    imageUrl: faker.image.url(),
-    author: insertedMockUser1._id,
-    description: 'This post has 2 comments',
-    likes: [insertedMockUser1._id],
-  };
-  const mockPost2 = {
-    imageUrl: faker.image.url(),
-    author: insertedMockUser2._id,
-    description: 'This post has no comments',
-    likes: [insertedMockUser2._id],
-  };
-  await posts.insertMany([mockPost1, mockPost2]);
-
-  // Set up comment
-  const comments = mongoose.connection.collection('comments');
-
-  const insertedMockPost1 = await Post.findOne({
-    author: insertedMockUser1._id,
+  usersToAssignPostsTo.forEach((user) => {
+    // Generate 1-10 posts for each user
+    const numberOfPosts = randomIntFromInterval(1, 10);
+    for (let i = 0; i < numberOfPosts; i += 1) {
+      const post = createRandomPost(user);
+      addRandomLikesToPost(post, usersToInsert);
+      postsToInsert.push(post);
+    }
   });
-  const mockComment1 = {
-    post: insertedMockPost1._id,
-    author: insertedMockUser1._id,
-    content: 'Test comment 1',
-  };
-  const mockComment2 = {
-    post: insertedMockPost1._id,
-    author: insertedMockUser2._id,
-    content: 'Test comment 2',
-  };
-  await comments.insertMany([mockComment1, mockComment2]);
+
+  // Generate 100 comments for random posts
+  const commentsToInsert = createRandomComments(postsToInsert, usersToInsert);
+
+  await Promise.all[
+    (User.insertMany(usersToInsert),
+    Post.insertMany(postsToInsert),
+    Comment.insertMany(commentsToInsert))
+  ];
 }
 
 module.exports = { seedTestDb, seedProductionDb };

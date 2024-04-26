@@ -9,7 +9,7 @@ const logger = require('morgan');
 const passport = require('passport');
 const { startMemoryMongoServer } = require('./tests/memoryMongoServer');
 const User = require('./models/user');
-const seedDb = require('./scripts/seedDb');
+const { seedProductionDb } = require('./scripts/seedDb');
 
 const app = express();
 
@@ -94,13 +94,9 @@ if (process.env.NODE_ENV === 'development') {
   connectToMongoAtlas()
     .then(async () => {
       if (process.env.SEED_DB === 'true') {
-        try {
-          console.log('Seeding database...');
-          await seedDb();
-          console.log('Database has been seeded.');
-        } catch (err) {
-          throw new Error(`Unable to seed database. ${err}`);
-        }
+        console.log('Seeding database...');
+        await seedProductionDb();
+        console.log('Database has been seeded.');
       }
     })
     .then(() => console.log('Server has finished starting.'));
