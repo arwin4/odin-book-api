@@ -1,6 +1,6 @@
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
-const seedDb = require('../scripts/seedDb');
+const { seedTestDb } = require('../scripts/seedDb');
 
 let mongoServer;
 
@@ -9,7 +9,7 @@ async function startMemoryMongoServer() {
   const mongoUri = mongoServer.getUri();
   await mongoose.connect(mongoUri);
 
-  await seedDb();
+  await seedTestDb();
 }
 
 async function stopMemoryMongoServer() {
