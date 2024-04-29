@@ -176,7 +176,7 @@ describe('Delete post', () => {
     expect(await Comment.find({ post: postId }).countDocuments()).not.toBe(0);
 
     const res = await request(app).delete(`/${postId}`);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(204);
     expect(await Post.findById(postId)).toBeFalsy();
     expect(await Comment.find({ post: postId }).countDocuments()).toBe(0);
   });

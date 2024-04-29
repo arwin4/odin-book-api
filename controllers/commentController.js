@@ -100,5 +100,5 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 
-  return res.sendStatus(200);
+  return res.sendStatus(204);
 });
