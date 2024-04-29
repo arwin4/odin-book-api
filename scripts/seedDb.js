@@ -111,13 +111,3 @@ async function seedProductionDb() {
 }
 
 module.exports = { seedTestDb, seedProductionDb };
-
-/**
-   * 100 users
-   * 50 users with posts
-   * 50 users without posts
-   * 
-   * users with posts:
-   * 1-10 posts each
-   
-   */
