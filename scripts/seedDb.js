@@ -67,10 +67,22 @@ async function seedProductionDb() {
     return;
   }
 
-  // Generate 100 users
+  // Generate up to 100 users
   const usersToInsert = [];
+
   for (let i = 0; i < 100; i += 1) {
-    usersToInsert.push(createRandomUser());
+    let duplicateUsername = true;
+    let newUser;
+    while (duplicateUsername) {
+      newUser = createRandomUser();
+      // eslint-disable-next-line no-loop-func
+      if (usersToInsert.find((user) => user.username === newUser.username)) {
+        duplicateUsername = true;
+      } else {
+        duplicateUsername = false;
+      }
+    }
+    usersToInsert.push(newUser);
   }
 
   // Generate posts for half of the created users
