@@ -6,6 +6,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const logger = require('morgan');
+const session = require('express-session');
 const passport = require('passport');
 const { startMemoryMongoServer } = require('./tests/memoryMongoServer');
 const User = require('./models/user');
@@ -29,6 +30,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 /* == Passport == */
+const sessionSecret = process.env.SESSION_SECRET;
+app.use(
+  session({ secret: sessionSecret, resave: false, saveUninitialized: true }),
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
