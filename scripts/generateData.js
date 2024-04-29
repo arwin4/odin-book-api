@@ -5,7 +5,7 @@ const shuffleArray = require('../utils/shuffleArray');
 
 function createRandomUser() {
   const firstName = faker.person.firstName();
-  const username = faker.internet.userName({ firstName });
+  const username = faker.internet.userName({ firstName, lastName: '' });
   const id = faker.database.mongodbObjectId();
 
   return {
