@@ -67,10 +67,11 @@ async function seedProductionDb() {
     return;
   }
 
-  // Generate up to 100 users
+  // Generate users
+  const numberOfUsersToGenerate = 1000;
   const usersToInsert = [];
 
-  for (let i = 0; i < 100; i += 1) {
+  for (let i = 0; i < numberOfUsersToGenerate; i += 1) {
     let duplicateUsername = true;
     let newUser;
     while (duplicateUsername) {
@@ -99,7 +100,7 @@ async function seedProductionDb() {
     }
   });
 
-  // Generate 100 comments for random posts
+  // Generate comments for random posts. Number of comments = number of users.
   const commentsToInsert = createRandomComments(postsToInsert, usersToInsert);
 
   await Promise.all[
