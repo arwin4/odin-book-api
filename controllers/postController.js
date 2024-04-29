@@ -3,7 +3,7 @@ const Post = require('../models/post');
 const Comment = require('../models/comment');
 
 exports.getPosts = asyncHandler(async (req, res) => {
-  const foundPosts = await Post.find().sort({ createdAt: -1 }).limit(50);
+  const foundPosts = await Post.find().sort({ dateCreated: -1 }).limit(50);
 
   const resObj = { data: [] };
   foundPosts.forEach((post) => {
