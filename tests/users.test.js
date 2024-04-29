@@ -74,7 +74,7 @@ describe('Get user', () => {
 });
 
 describe('Signup', () => {
-  it.only('fails if no username is provided', async () => {
+  it('fails if no username is provided', async () => {
     expect(await User.countDocuments({})).toBe(2);
     const res = await request(app)
       .post('/')
@@ -210,9 +210,16 @@ describe('Signup', () => {
       expect(await User.countDocuments({})).toBe(2);
       const res = await request(app)
         .post('/')
-        .type('form')
-        .send({ username: 'TESTUSER' })
-        .send({ password: 'abc' });
+        .send({
+          data: {
+            type: 'users',
+            attributes: {
+              username: 'TESTUSER',
+              firstName: 'Ness',
+              password: 'abc',
+            },
+          },
+        });
 
       expect(res.statusCode).toBe(409);
       expect(await User.countDocuments({})).toBe(2);
@@ -222,9 +229,16 @@ describe('Signup', () => {
       expect(await User.countDocuments({})).toBe(2);
       const res = await request(app)
         .post('/')
-        .type('form')
-        .send({ username: 'testuser' })
-        .send({ password: 'abc' });
+        .send({
+          data: {
+            type: 'users',
+            attributes: {
+              username: 'testuser',
+              firstName: 'Ness',
+              password: 'abc',
+            },
+          },
+        });
 
       expect(res.statusCode).toBe(409);
       expect(await User.countDocuments({})).toBe(2);
@@ -235,10 +249,16 @@ describe('Signup', () => {
     expect(await User.countDocuments({})).toBe(2);
     const res = await request(app)
       .post('/')
-      .type('form')
-      .send({ username: 'signup' })
-      .send({ firstName: 'Ness' })
-      .send({ password: 'abc' });
+      .send({
+        data: {
+          type: 'users',
+          attributes: {
+            username: 'signup',
+            firstName: 'Ness',
+            password: 'abc',
+          },
+        },
+      });
 
     expect(res.statusCode).toBe(201);
 
