@@ -9,6 +9,7 @@ const {
 
 const app = express();
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/auth', auth);
 app.use('/user', user);
@@ -25,10 +26,16 @@ beforeEach(async () => {
   // Create a user to use in the tests
   await request(app)
     .post('/user/')
-    .type('form')
-    .send({ username })
-    .send({ firstName: 'Jay Double-U Tee' })
-    .send({ password });
+    .send({
+      data: {
+        type: 'users',
+        attributes: {
+          username,
+          firstName: 'Jay Double-U Tee',
+          password,
+        },
+      },
+    });
 });
 
 afterEach(async () => {

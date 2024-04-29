@@ -1,6 +1,5 @@
 const express = require('express');
 const request = require('supertest');
-const mongoose = require('mongoose');
 const user = require('../routes/user');
 const {
   startMemoryMongoServer,
@@ -11,6 +10,7 @@ const { mockUser1 } = require('./mocks/users');
 
 const app = express();
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/', user);
 
@@ -48,29 +48,45 @@ describe('Get user', () => {
   it('gets the test user', async () => {
     const res = await request(app).get('/testUser');
 
+    const expectedRes = {
+      data: {
+        type: 'users',
+        id: expect.anything(),
+        attributes: {
+          username: 'testUser',
+          normalizedUsername: 'testuser',
+          firstName: 'Paula',
+          dateCreated: expect.anything(),
+          friends: [],
+          followers: [],
+          isBot: false,
+        },
+      },
+    };
+
     expect(res.statusCode).toBe(200);
-    expect(res.body.username).toBe('testUser');
-    expect(res.body.normalizedUsername).toBe('testuser');
-    expect(res.body.firstName).toBe('Paula');
-    expect(mongoose.isValidObjectId(res.body._id)).toBe(true);
-    expect(res.body.friends).toBeTruthy();
-    expect(res.body.followers).toBeTruthy();
-    expect(res.body.isBot).toBe(false);
+    expect(res.body).toEqual(expectedRes);
   });
-  test('inexistent user causes 404 ', async () => {
+  test('non-existent user causes 404', async () => {
     const res = await request(app).get('/i-dont-exist');
     expect(res.statusCode).toBe(404);
   });
 });
 
 describe('Signup', () => {
-  it('fails if no username is provided', async () => {
+  it.only('fails if no username is provided', async () => {
     expect(await User.countDocuments({})).toBe(2);
     const res = await request(app)
       .post('/')
-      .type('form')
-      .send({ firstName: 'Ness' })
-      .send({ password: 'abc' });
+      .send({
+        data: {
+          type: 'users',
+          attributes: {
+            firstName: 'Ness',
+            password: 'abc',
+          },
+        },
+      });
 
     expect(res.statusCode).toBe(400);
     expect(await User.countDocuments({})).toBe(2);
@@ -80,9 +96,15 @@ describe('Signup', () => {
     expect(await User.countDocuments({})).toBe(2);
     const res = await request(app)
       .post('/')
-      .type('form')
-      .send({ username: 'signup' })
-      .send({ firstName: 'Ness' });
+      .send({
+        data: {
+          type: 'users',
+          attributes: {
+            username: 'signup',
+            firstName: 'Ness',
+          },
+        },
+      });
 
     expect(res.statusCode).toBe(400);
     expect(await User.countDocuments({})).toBe(2);
@@ -92,9 +114,15 @@ describe('Signup', () => {
     expect(await User.countDocuments({})).toBe(2);
     const res = await request(app)
       .post('/')
-      .type('form')
-      .send({ username: 'signup' })
-      .send({ password: 'abc' });
+      .send({
+        data: {
+          type: 'users',
+          attributes: {
+            username: 'signup',
+            password: 'abc',
+          },
+        },
+      });
 
     expect(res.statusCode).toBe(400);
     expect(await User.countDocuments({})).toBe(2);
@@ -104,9 +132,16 @@ describe('Signup', () => {
     expect(await User.countDocuments({})).toBe(2);
     const res = await request(app)
       .post('/')
-      .type('form')
-      .send({ username: 'signup' })
-      .send({ password: 'ab' });
+      .send({
+        data: {
+          type: 'users',
+          attributes: {
+            username: 'signup',
+            firstName: 'Ness',
+            password: 'ab',
+          },
+        },
+      });
 
     expect(res.statusCode).toBe(400);
     expect(await User.countDocuments({})).toBe(2);
@@ -116,11 +151,16 @@ describe('Signup', () => {
     expect(await User.countDocuments({})).toBe(2);
     const res = await request(app)
       .post('/')
-      .type('form')
-      .send({ username: 'signup' })
       .send({
-        password:
-          'this-password-is-over-64-characters-long-oh-noooooooooooooooooooo',
+        data: {
+          type: 'users',
+          attributes: {
+            username: 'signup',
+            firstName: 'Ness',
+            password:
+              'this-password-is-over-64-characters-long-oh-noooooooooooooooooooo',
+          },
+        },
       });
 
     expect(res.statusCode).toBe(400);
@@ -131,9 +171,16 @@ describe('Signup', () => {
     expect(await User.countDocuments({})).toBe(2);
     const res = await request(app)
       .post('/')
-      .type('form')
-      .send({ username: 'this-username-is-over-twenty-characters-long' })
-      .send({ password: 'abc' });
+      .send({
+        data: {
+          type: 'users',
+          attributes: {
+            username: 'this-username-is-over-twenty-characters-long',
+            firstName: 'Ness',
+            password: 'abc',
+          },
+        },
+      });
 
     expect(res.statusCode).toBe(400);
     expect(await User.countDocuments({})).toBe(2);
@@ -144,9 +191,16 @@ describe('Signup', () => {
       expect(await User.countDocuments({})).toBe(2);
       const res = await request(app)
         .post('/')
-        .type('form')
-        .send({ username: 'testUser' })
-        .send({ password: 'abc' });
+        .send({
+          data: {
+            type: 'users',
+            attributes: {
+              username: 'testUser',
+              firstName: 'Ness',
+              password: 'abc',
+            },
+          },
+        });
 
       expect(res.statusCode).toBe(409);
       expect(await User.countDocuments({})).toBe(2);

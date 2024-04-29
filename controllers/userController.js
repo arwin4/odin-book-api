@@ -14,17 +14,22 @@ exports.getUser = asyncHandler(async (req, res) => {
         .status(404)
         .send({ errors: [{ title: 'User does not exist' }] });
     }
-    const user = {
-      _id: foundUser._id,
-      username: foundUser.username,
-      normalizedUsername: foundUser.normalizedUsername,
-      firstName: foundUser.firstName,
-      dateCreated: foundUser.dateCreated,
-      friends: foundUser.friends,
-      followers: foundUser.followers,
-      isBot: foundUser.isBot,
-    };
-    return res.send(user);
+
+    return res.send({
+      data: {
+        type: 'users',
+        id: foundUser._id,
+        attributes: {
+          username: foundUser.username,
+          normalizedUsername: foundUser.normalizedUsername,
+          firstName: foundUser.firstName,
+          dateCreated: foundUser.dateCreated,
+          friends: foundUser.friends,
+          followers: foundUser.followers,
+          isBot: foundUser.isBot,
+        },
+      },
+    });
   } catch (error) {
     return res
       .status(500)
@@ -33,6 +38,13 @@ exports.getUser = asyncHandler(async (req, res) => {
 });
 
 exports.signUp = [
+  asyncHandler(async (req, res, next) => {
+    // Set json to req.body for checkSchema
+    const { attributes } = req.body.data;
+    req.body = attributes;
+    return next();
+  }),
+
   checkSchema(userSchema),
 
   asyncHandler(async (req, res, next) => {
