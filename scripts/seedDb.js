@@ -67,10 +67,23 @@ async function seedProductionDb() {
     return;
   }
 
-  // Generate 100 users
+  // Generate users
+  const numberOfUsersToGenerate = 1000;
   const usersToInsert = [];
-  for (let i = 0; i < 100; i += 1) {
-    usersToInsert.push(createRandomUser());
+
+  for (let i = 0; i < numberOfUsersToGenerate; i += 1) {
+    let duplicateUsername = true;
+    let newUser;
+    while (duplicateUsername) {
+      newUser = createRandomUser();
+      // eslint-disable-next-line no-loop-func
+      if (usersToInsert.find((user) => user.username === newUser.username)) {
+        duplicateUsername = true;
+      } else {
+        duplicateUsername = false;
+      }
+    }
+    usersToInsert.push(newUser);
   }
 
   // Generate posts for half of the created users
@@ -87,7 +100,7 @@ async function seedProductionDb() {
     }
   });
 
-  // Generate 100 comments for random posts
+  // Generate comments for random posts. Number of comments = number of users.
   const commentsToInsert = createRandomComments(postsToInsert, usersToInsert);
 
   await Promise.all[
@@ -98,13 +111,3 @@ async function seedProductionDb() {
 }
 
 module.exports = { seedTestDb, seedProductionDb };
-
-/**
-   * 100 users
-   * 50 users with posts
-   * 50 users without posts
-   * 
-   * users with posts:
-   * 1-10 posts each
-   
-   */

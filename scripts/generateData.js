@@ -5,7 +5,7 @@ const shuffleArray = require('../utils/shuffleArray');
 
 function createRandomUser() {
   const firstName = faker.person.firstName();
-  const username = faker.internet.userName({ firstName });
+  const username = faker.internet.userName({ firstName, lastName: '' });
   const id = faker.database.mongodbObjectId();
 
   return {
@@ -59,7 +59,7 @@ function createRandomComments(posts, users) {
   // TODO: Allow multiple comments per user
   const shuffledUsers = shuffleArray(users);
 
-  for (let i = 0; i < 100; i += 1) {
+  for (let i = 0; i < users.length; i += 1) {
     comments.push(createRandomComment(shuffledPosts[i], shuffledUsers[i]));
   }
 
