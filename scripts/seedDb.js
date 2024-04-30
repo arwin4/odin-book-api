@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
 const { faker } = require('@faker-js/faker/locale/en');
 const mongoose = require('mongoose');
-const { mockUser1, mockUser2 } = require('../tests/mocks/users');
+const { mockUser1, mockUser2, mockUser3 } = require('../tests/mocks/users');
 const {
   createRandomUser,
   createRandomPost,
@@ -17,13 +17,17 @@ async function seedTestDb() {
   // Set up users. MongoDB creates the collection implicitly when referenced.
   const users = mongoose.connection.collection('users');
 
-  await users.insertMany([mockUser1, mockUser2]);
+  await users.insertMany([mockUser1, mockUser2, mockUser3]);
+
+  const insertedMockUser1 = await User.findOne({ username: 'testUser' });
+  const insertedMockUser2 = await User.findOne({ username: 'testUser2' });
+  insertedMockUser1.followers = [insertedMockUser2._id];
+  insertedMockUser2.followers = [insertedMockUser1._id];
+
+  await Promise.all([insertedMockUser1.save(), insertedMockUser2.save()]);
 
   // Set up posts
   const posts = mongoose.connection.collection('posts');
-
-  const insertedMockUser1 = await users.findOne({ username: 'testUser' });
-  const insertedMockUser2 = await users.findOne({ username: 'testUser2' });
 
   const mockPost1 = {
     imageUrl: faker.image.url(),

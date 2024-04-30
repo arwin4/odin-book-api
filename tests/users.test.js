@@ -40,7 +40,7 @@ describe('Verify test db setup', () => {
   });
 
   it('finds no other documents other than the inserted ones', async () => {
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
   });
 });
 
@@ -58,7 +58,7 @@ describe('Get user', () => {
           firstName: 'Paula',
           dateCreated: expect.anything(),
           friends: [],
-          followers: [],
+          followers: [expect.any(String)],
           isBot: false,
         },
       },
@@ -75,7 +75,7 @@ describe('Get user', () => {
 
 describe('Signup', () => {
   it('fails if no username is provided', async () => {
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
     const res = await request(app)
       .post('/')
       .send({
@@ -89,11 +89,11 @@ describe('Signup', () => {
       });
 
     expect(res.statusCode).toBe(400);
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
   });
 
   it('fails if no password is provided', async () => {
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
     const res = await request(app)
       .post('/')
       .send({
@@ -107,11 +107,11 @@ describe('Signup', () => {
       });
 
     expect(res.statusCode).toBe(400);
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
   });
 
   it('fails if no first name is provided', async () => {
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
     const res = await request(app)
       .post('/')
       .send({
@@ -125,11 +125,11 @@ describe('Signup', () => {
       });
 
     expect(res.statusCode).toBe(400);
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
   });
 
   it('fails if password too short', async () => {
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
     const res = await request(app)
       .post('/')
       .send({
@@ -144,11 +144,11 @@ describe('Signup', () => {
       });
 
     expect(res.statusCode).toBe(400);
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
   });
 
   it('fails if password too long', async () => {
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
     const res = await request(app)
       .post('/')
       .send({
@@ -164,11 +164,11 @@ describe('Signup', () => {
       });
 
     expect(res.statusCode).toBe(400);
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
   });
 
   it('fails if username too long', async () => {
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
     const res = await request(app)
       .post('/')
       .send({
@@ -183,12 +183,12 @@ describe('Signup', () => {
       });
 
     expect(res.statusCode).toBe(400);
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
   });
 
   describe('Refuses duplicate usernames', () => {
     it('same case', async () => {
-      expect(await User.countDocuments({})).toBe(2);
+      expect(await User.countDocuments({})).toBe(3);
       const res = await request(app)
         .post('/')
         .send({
@@ -203,11 +203,11 @@ describe('Signup', () => {
         });
 
       expect(res.statusCode).toBe(409);
-      expect(await User.countDocuments({})).toBe(2);
+      expect(await User.countDocuments({})).toBe(3);
     });
 
     it('uppercase', async () => {
-      expect(await User.countDocuments({})).toBe(2);
+      expect(await User.countDocuments({})).toBe(3);
       const res = await request(app)
         .post('/')
         .send({
@@ -222,11 +222,11 @@ describe('Signup', () => {
         });
 
       expect(res.statusCode).toBe(409);
-      expect(await User.countDocuments({})).toBe(2);
+      expect(await User.countDocuments({})).toBe(3);
     });
 
     it('lowercase', async () => {
-      expect(await User.countDocuments({})).toBe(2);
+      expect(await User.countDocuments({})).toBe(3);
       const res = await request(app)
         .post('/')
         .send({
@@ -241,12 +241,12 @@ describe('Signup', () => {
         });
 
       expect(res.statusCode).toBe(409);
-      expect(await User.countDocuments({})).toBe(2);
+      expect(await User.countDocuments({})).toBe(3);
     });
   });
 
   it('accepts new user', async () => {
-    expect(await User.countDocuments({})).toBe(2);
+    expect(await User.countDocuments({})).toBe(3);
     const res = await request(app)
       .post('/')
       .send({
@@ -279,6 +279,92 @@ describe('Signup', () => {
     };
     expect(res.body).toEqual(expectedItem);
 
-    expect(await User.countDocuments({})).toBe(3);
+    expect(await User.countDocuments({})).toBe(4);
+  });
+});
+
+describe('Followers', () => {
+  describe('Following', () => {
+    test('non-existent user causes 404', async () => {
+      const res = await request(app).post('/i-dont-exist/followers');
+      expect(res.statusCode).toBe(404);
+    });
+    it('gets 400 if the requested user is the current user ', async () => {
+      const usernameToFollow = 'testuser';
+
+      let userToFollow = await User.findOne({
+        normalizedUsername: usernameToFollow,
+      });
+      expect(userToFollow.followers.length).toBe(1);
+
+      const res = await request(app).post(`/${usernameToFollow}/followers`);
+      expect(res.statusCode).toBe(400);
+
+      userToFollow = await User.findOne({
+        normalizedUsername: usernameToFollow,
+      });
+      expect(userToFollow.followers.length).toBe(1);
+    });
+    it('already followed user causes 409', async () => {
+      const usernameToFollow = 'testuser2';
+      let userToFollow = await User.findOne({
+        normalizedUsername: usernameToFollow,
+      });
+      expect(userToFollow.followers.length).toBe(1);
+
+      const res = await request(app).post(`/${usernameToFollow}/followers`);
+      expect(res.statusCode).toBe(409);
+
+      userToFollow = await User.findOne({
+        normalizedUsername: usernameToFollow,
+      });
+      expect(userToFollow.followers.length).toBe(1);
+    });
+    it('follows the requested user', async () => {
+      const usernameToFollow = 'testuser3';
+      let userToFollow = await User.findOne({
+        normalizedUsername: usernameToFollow,
+      });
+      expect(userToFollow.followers.length).toBe(0);
+
+      const res = await request(app).post(`/${usernameToFollow}/followers`);
+      expect(res.statusCode).toBe(201);
+
+      userToFollow = await User.findOne({
+        normalizedUsername: usernameToFollow,
+      });
+      expect(userToFollow.followers.length).toBe(1);
+    });
+  });
+  describe('Unfollowing', () => {
+    test('non-existent user causes 404', async () => {
+      const res = await request(app).delete('/i-dont-exist/followers');
+      expect(res.statusCode).toBe(404);
+    });
+    it('not-followed user causes 404', async () => {
+      const usernameToUnfollow = 'testuser3';
+      const res = await request(app).delete(`/${usernameToUnfollow}/followers`);
+      expect(res.statusCode).toBe(404);
+    });
+    it('gets 400 if the requested user is the current user ', async () => {
+      const usernameToUnfollow = 'testuser';
+      const res = await request(app).delete(`/${usernameToUnfollow}/followers`);
+      expect(res.statusCode).toBe(400);
+    });
+    it('unfollows the requested user', async () => {
+      const usernameToUnfollow = 'testuser2';
+      let userToUnfollow = await User.findOne({
+        normalizedUsername: usernameToUnfollow,
+      });
+      expect(userToUnfollow.followers.length).toBe(1);
+
+      const res = await request(app).delete(`/${usernameToUnfollow}/followers`);
+      expect(res.statusCode).toBe(204);
+
+      userToUnfollow = await User.findOne({
+        normalizedUsername: usernameToUnfollow,
+      });
+      expect(userToUnfollow.followers.length).toBe(0);
+    });
   });
 });

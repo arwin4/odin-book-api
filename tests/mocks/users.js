@@ -10,4 +10,10 @@ const mockUser2 = {
   firstName: 'Jeff',
 };
 
-module.exports = { mockUser1, mockUser2 };
+const mockUser3 = {
+  username: 'testUser3',
+  normalizedUsername: 'testuser3',
+  firstName: 'Poo',
+};
+
+module.exports = { mockUser1, mockUser2, mockUser3 };
