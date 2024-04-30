@@ -21,6 +21,8 @@ async function seedTestDb() {
 
   const insertedMockUser1 = await User.findOne({ username: 'testUser' });
   const insertedMockUser2 = await User.findOne({ username: 'testUser2' });
+  const insertedMockUser3 = await User.findOne({ username: 'testUser3' });
+
   insertedMockUser1.followers = [insertedMockUser2._id];
   insertedMockUser2.followers = [insertedMockUser1._id];
 
@@ -34,14 +36,23 @@ async function seedTestDb() {
     author: insertedMockUser1._id,
     description: 'This post has 2 comments',
     likes: [insertedMockUser1._id],
+    dateCreated: faker.date.past(),
   };
   const mockPost2 = {
     imageUrl: faker.image.url(),
     author: insertedMockUser2._id,
     description: 'This post has no comments',
     likes: [insertedMockUser2._id],
+    dateCreated: faker.date.past(),
   };
-  await posts.insertMany([mockPost1, mockPost2]);
+  const mockPost3 = {
+    imageUrl: faker.image.url(),
+    author: insertedMockUser3._id,
+    description: 'This is mock post 3',
+    likes: [insertedMockUser2._id],
+    dateCreated: faker.date.past(),
+  };
+  await posts.insertMany([mockPost1, mockPost2, mockPost3]);
 
   // Set up comment
   const comments = mongoose.connection.collection('comments');

@@ -1,25 +1,56 @@
 const asyncHandler = require('express-async-handler');
 const Post = require('../models/post');
 const Comment = require('../models/comment');
+const User = require('../models/user');
 
 exports.getPosts = asyncHandler(async (req, res) => {
-  const foundPosts = await Post.find().sort({ dateCreated: -1 }).limit(50);
+  let followedUserFilter = {};
+  if (req.query?.filter?.followed) {
+    followedUserFilter = { followers: req.user._id };
+  }
+
+  // Get latest 50 posts, filtering by only followed users if requested
+  const foundPosts = await User.aggregate([
+    { $match: followedUserFilter },
+    {
+      $lookup: {
+        from: 'posts',
+        localField: '_id',
+        foreignField: 'author',
+        as: 'post',
+      },
+    },
+    { $project: { post: 1 } },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'post.author',
+        foreignField: '_id',
+        as: 'author',
+      },
+    },
+    // { $unwind: '$post' },
+    { $sort: { 'post.dateCreated': -1 } },
+    { $limit: 50 },
+  ]);
 
   const resObj = { data: [] };
-  foundPosts.forEach((post) => {
+  foundPosts.forEach((doc) => {
     const likesArray = [];
-    post.likes.forEach((like) => likesArray.push({ type: 'likes', id: like }));
+    doc.post[0].likes.forEach((like) =>
+      likesArray.push({ type: 'likes', id: like }),
+    );
 
     resObj.data.push({
       type: 'posts',
-      id: post._id,
+      id: doc.post[0]._id,
       attributes: {
-        imageUrl: post.imageUrl,
-        description: post.description,
-        dateCreated: post.dateCreated,
+        imageUrl: doc.post[0].imageUrl,
+        description: doc.post[0].description,
+        dateCreated: doc.post[0].dateCreated,
       },
       relationships: {
-        author: { data: { type: 'users', id: post.author } },
+        author: { data: { type: 'users', id: doc.post[0].author } },
         likes: { data: likesArray },
       },
     });

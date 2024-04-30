@@ -36,7 +36,7 @@ afterEach(async () => {
 
 describe('Verify test db setup', () => {
   it('finds the 2 inserted test posts in the db', async () => {
-    expect(await Post.countDocuments({})).toBe(2);
+    expect(await Post.countDocuments({})).toBe(3);
   });
 });
 
@@ -63,7 +63,33 @@ describe('Get post', () => {
     };
 
     expect(res.body.data).toBeInstanceOf(Array);
-    expect(res.body.data).toHaveLength(2);
+    expect(res.body.data).toHaveLength(3);
+    expect(res.body.data).toContainEqual(expectedRes);
+  });
+
+  it('gets posts from followed users', async () => {
+    const res = await request(app).get('/?filter[followed]=true');
+
+    const expectedRes = {
+      type: 'posts',
+      id: expect.anything(),
+      attributes: {
+        imageUrl: expect.anything(),
+        description: expect.anything(),
+        dateCreated: expect.anything(),
+      },
+      relationships: {
+        author: {
+          data: { type: 'users', id: expect.anything() },
+        },
+        likes: {
+          data: [{ type: 'likes', id: expect.anything() }],
+        },
+      },
+    };
+
+    expect(res.body.data).toBeInstanceOf(Array);
+    expect(res.body.data).toHaveLength(1);
     expect(res.body.data).toContainEqual(expectedRes);
   });
   it('gets post by ID', async () => {
@@ -103,7 +129,7 @@ describe('Get post', () => {
 
 describe('Post post', () => {
   it('saves a new post', async () => {
-    expect(await Post.countDocuments({})).toBe(2);
+    expect(await Post.countDocuments({})).toBe(3);
 
     // frontend:
     // TODO: must correctly handle <10MiB files and warn for bigger ones
@@ -145,7 +171,7 @@ describe('Post post', () => {
     };
 
     expect(res.body).toEqual(expectedRes);
-    expect(await Post.countDocuments({})).toBe(3);
+    expect(await Post.countDocuments({})).toBe(4);
   });
 });
 
