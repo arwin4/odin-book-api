@@ -4,53 +4,87 @@ const Comment = require('../models/comment');
 const User = require('../models/user');
 
 exports.getPosts = asyncHandler(async (req, res) => {
-  let followedUserFilter = {};
-  if (req.query?.filter?.followed) {
-    followedUserFilter = { followers: req.user._id };
-  }
+  let foundPosts;
 
-  // Get latest 50 posts, filtering by only followed users if requested
-  const foundPosts = await User.aggregate([
-    { $match: followedUserFilter },
-    {
-      $lookup: {
-        from: 'posts',
-        localField: '_id',
-        foreignField: 'author',
-        as: 'post',
+  if (req.query?.filter?.followed) {
+    // Filter by only followed users
+    foundPosts = await User.aggregate([
+      { $match: { followers: req.user._id } },
+      {
+        $lookup: {
+          from: 'posts',
+          localField: '_id',
+          foreignField: 'author',
+          as: 'post',
+        },
       },
-    },
-    { $project: { post: 1 } },
-    {
-      $lookup: {
-        from: 'users',
-        localField: 'post.author',
-        foreignField: '_id',
-        as: 'author',
+      { $project: { post: 1 } },
+      { $unwind: '$post' },
+      { $sort: { 'post.dateCreated': -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'post.author',
+          foreignField: '_id',
+          as: 'author',
+        },
       },
-    },
-    // { $unwind: '$post' },
-    { $sort: { 'post.dateCreated': -1 } },
-    { $limit: 50 },
-  ]);
+    ]);
+  } else {
+    // Latest posts made by all users
+    foundPosts = await Post.aggregate([
+      { $sort: { dateCreated: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: 'posts',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'post',
+        },
+      },
+      { $project: { post: 1 } },
+      { $unwind: '$post' },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'post.author',
+          foreignField: '_id',
+          as: 'author',
+        },
+      },
+    ]);
+  }
 
   const resObj = { data: [] };
   foundPosts.forEach((doc) => {
     const likesArray = [];
-    doc.post[0].likes.forEach((like) =>
+    doc.post.likes.forEach((like) =>
       likesArray.push({ type: 'likes', id: like }),
     );
 
     resObj.data.push({
       type: 'posts',
-      id: doc.post[0]._id,
+      id: doc.post._id,
       attributes: {
-        imageUrl: doc.post[0].imageUrl,
-        description: doc.post[0].description,
-        dateCreated: doc.post[0].dateCreated,
+        imageUrl: doc.post.imageUrl,
+        description: doc.post.description,
+        dateCreated: doc.post.dateCreated,
       },
       relationships: {
-        author: { data: { type: 'users', id: doc.post[0].author } },
+        author: {
+          data: {
+            type: 'users',
+            id: doc.post.author,
+            attributes: {
+              username: doc.author[0].username,
+              normalizedUsername: doc.author[0].normalizedUsername,
+              firstName: doc.author[0].firstName,
+              isBot: doc.author[0].isBot,
+            },
+          },
+        },
         likes: { data: likesArray },
       },
     });

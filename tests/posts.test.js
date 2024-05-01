@@ -54,7 +54,11 @@ describe('Get post', () => {
       },
       relationships: {
         author: {
-          data: { type: 'users', id: expect.anything() },
+          data: {
+            type: 'users',
+            id: expect.anything(),
+            attributes: expect.anything(),
+          },
         },
         likes: {
           data: [{ type: 'likes', id: expect.anything() }],
@@ -80,7 +84,11 @@ describe('Get post', () => {
       },
       relationships: {
         author: {
-          data: { type: 'users', id: expect.anything() },
+          data: {
+            type: 'users',
+            id: expect.anything(),
+            attributes: expect.anything(),
+          },
         },
         likes: {
           data: [{ type: 'likes', id: expect.anything() }],

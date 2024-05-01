@@ -25,6 +25,7 @@ function createRandomPost(user) {
     author: user._id,
     description: faker.lorem.sentence(),
     likes: [],
+    dateCreated: faker.date.past(),
   };
 }
 
