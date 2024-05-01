@@ -12,6 +12,7 @@ const Post = require('../models/post');
 const User = require('../models/user');
 const randomIntFromInterval = require('../utils/randomIntFromInterval');
 const Comment = require('../models/comment');
+const shuffleArray = require('../utils/shuffleArray');
 
 async function seedTestDb() {
   // Set up users. MongoDB creates the collection implicitly when referenced.
@@ -117,6 +118,18 @@ async function seedProductionDb() {
 
   // Generate comments for random posts. Number of comments = number of users.
   const commentsToInsert = createRandomComments(postsToInsert, usersToInsert);
+
+  // Assign 0-200 followers to every user
+  usersToInsert.forEach((user) => {
+    const allUsersExceptCurrent = usersToInsert.filter(
+      (curUser) => curUser !== user,
+    );
+    const allUsersExceptCurrentShuffled = shuffleArray(allUsersExceptCurrent);
+    const numberOfFollowers = randomIntFromInterval(0, 200);
+    for (let i = 0; i < numberOfFollowers; i += 1) {
+      user.followers.push(allUsersExceptCurrentShuffled[i]);
+    }
+  });
 
   await Promise.all[
     (User.insertMany(usersToInsert),

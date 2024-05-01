@@ -14,6 +14,7 @@ function createRandomUser() {
     username,
     normalizedUsername: username.toLowerCase(),
     bio: faker.lorem.sentence(),
+    followers: [],
   };
 }
 
