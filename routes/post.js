@@ -8,7 +8,7 @@ const checkPostExistence = require('../middleware/checkPostExistence');
 const router = express.Router();
 
 /* == POSTS == */
-// Get 50 latest posts
+// Get 10 latest posts
 router.get('/', postController.getPosts);
 
 // Get post by ID
