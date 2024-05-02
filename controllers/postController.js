@@ -2,61 +2,60 @@ const asyncHandler = require('express-async-handler');
 const Post = require('../models/post');
 const Comment = require('../models/comment');
 const User = require('../models/user');
+const verifyAuth = require('../passport/verifyAuth');
 
-exports.getPosts = asyncHandler(async (req, res) => {
-  let foundPosts;
+async function getLatestPostsFromAllUsers() {
+  return Post.aggregate([
+    { $sort: { dateCreated: -1 } },
+    { $limit: 10 },
+    {
+      $lookup: {
+        from: 'posts',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'post',
+      },
+    },
+    { $project: { post: 1 } },
+    { $unwind: '$post' },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'post.author',
+        foreignField: '_id',
+        as: 'author',
+      },
+    },
+  ]);
+}
 
-  if (req.query?.filter?.followed) {
-    // Filter by only followed users
-    foundPosts = await User.aggregate([
-      { $match: { followers: req.user._id } },
-      {
-        $lookup: {
-          from: 'posts',
-          localField: '_id',
-          foreignField: 'author',
-          as: 'post',
-        },
+async function getLatestPostsFromFollowedUsers(req) {
+  return User.aggregate([
+    { $match: { followers: req.user._id } },
+    {
+      $lookup: {
+        from: 'posts',
+        localField: '_id',
+        foreignField: 'author',
+        as: 'post',
       },
-      { $project: { post: 1 } },
-      { $unwind: '$post' },
-      { $sort: { 'post.dateCreated': -1 } },
-      { $limit: 10 },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'post.author',
-          foreignField: '_id',
-          as: 'author',
-        },
+    },
+    { $project: { post: 1 } },
+    { $unwind: '$post' },
+    { $sort: { 'post.dateCreated': -1 } },
+    { $limit: 10 },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'post.author',
+        foreignField: '_id',
+        as: 'author',
       },
-    ]);
-  } else {
-    // Latest posts made by all users
-    foundPosts = await Post.aggregate([
-      { $sort: { dateCreated: -1 } },
-      { $limit: 10 },
-      {
-        $lookup: {
-          from: 'posts',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'post',
-        },
-      },
-      { $project: { post: 1 } },
-      { $unwind: '$post' },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'post.author',
-          foreignField: '_id',
-          as: 'author',
-        },
-      },
-    ]);
-  }
+    },
+  ]);
+}
 
+async function sendPosts(foundPosts, res) {
   const resObj = { data: [] };
   foundPosts.forEach((doc) => {
     const likesArray = [];
@@ -90,7 +89,25 @@ exports.getPosts = asyncHandler(async (req, res) => {
     });
   });
   return res.send(resObj);
-});
+}
+
+exports.getPosts = [
+  asyncHandler(async (req, res, next) => {
+    if (req.query?.filter?.followed) {
+      next();
+    } else {
+      const foundPosts = await getLatestPostsFromAllUsers();
+      sendPosts(foundPosts, res);
+    }
+  }),
+
+  verifyAuth,
+
+  asyncHandler(async (req, res) => {
+    const foundPosts = await getLatestPostsFromFollowedUsers(req);
+    sendPosts(foundPosts, res);
+  }),
+];
 
 exports.getPostById = asyncHandler(async (req, res) => {
   const { postId } = req.params;
