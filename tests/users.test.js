@@ -67,7 +67,7 @@ describe('Get user', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(expectedRes);
   });
-  it.only('gets the current user', async () => {
+  it('gets the current user', async () => {
     const res = await request(app).get('/');
 
     const expectedRes = {
