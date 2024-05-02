@@ -67,6 +67,27 @@ describe('Get user', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(expectedRes);
   });
+  it.only('gets the current user', async () => {
+    const res = await request(app).get('/');
+
+    const expectedRes = {
+      data: {
+        type: 'users',
+        id: expect.anything(),
+        attributes: {
+          username: 'testUser',
+          normalizedUsername: 'testuser',
+          firstName: 'Paula',
+          dateCreated: expect.anything(),
+          friends: [],
+          followers: [],
+        },
+      },
+    };
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual(expectedRes);
+  });
   test('non-existent user causes 404', async () => {
     const res = await request(app).get('/i-dont-exist');
     expect(res.statusCode).toBe(404);

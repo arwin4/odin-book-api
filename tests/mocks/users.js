@@ -1,6 +1,11 @@
+const { faker } = require('@faker-js/faker');
+
 const mockUser1 = {
   username: 'testUser',
   normalizedUsername: 'testuser',
+  dateCreated: faker.date.past(),
+  followers: [],
+  friends: [],
   firstName: 'Paula',
 };
 

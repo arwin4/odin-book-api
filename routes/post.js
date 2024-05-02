@@ -9,7 +9,7 @@ const router = express.Router();
 
 /* == POSTS == */
 // Get 50 latest posts
-router.get('/', verifyAuth, postController.getPosts);
+router.get('/', postController.getPosts);
 
 // Get post by ID
 router.get(

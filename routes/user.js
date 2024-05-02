@@ -13,6 +13,9 @@ router.get('/test', (req, res) => {
 // Get user
 router.get('/:username', verifyAuth, userController.getUser);
 
+// Get current user with passport
+router.get('/', verifyAuth, userController.getCurrentUser);
+
 // Sign up user
 router.post('/', userController.signUp);
 

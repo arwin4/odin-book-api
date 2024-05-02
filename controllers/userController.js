@@ -37,6 +37,23 @@ exports.getUser = asyncHandler(async (req, res) => {
   }
 });
 
+exports.getCurrentUser = asyncHandler(async (req, res) =>
+  res.send({
+    data: {
+      type: 'users',
+      id: req.user._id,
+      attributes: {
+        username: req.user.username,
+        normalizedUsername: req.user.normalizedUsername,
+        firstName: req.user.firstName,
+        dateCreated: req.user.dateCreated,
+        friends: req.user.friends,
+        followers: req.user.followers,
+      },
+    },
+  }),
+);
+
 exports.signUp = [
   asyncHandler(async (req, res, next) => {
     // Set json to req.body for checkSchema
