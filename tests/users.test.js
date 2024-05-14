@@ -60,6 +60,7 @@ describe('Get user', () => {
           friends: [],
           followers: [expect.any(String)],
           isBot: false,
+          bio: expect.any(String),
         },
       },
     };

@@ -27,6 +27,7 @@ exports.getUser = asyncHandler(async (req, res) => {
           friends: foundUser.friends,
           followers: foundUser.followers,
           isBot: foundUser.isBot,
+          bio: foundUser.bio,
         },
       },
     });
