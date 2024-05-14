@@ -29,9 +29,16 @@ async function getLatestPostsFromAllUsers() {
   ]);
 }
 
-async function getLatestPostsFromFollowedUsers(req) {
+async function getLatestFilteredPosts(req) {
+  let filter;
+  if (req.query.filter?.followed) {
+    filter = { followers: req.user._id };
+  } else if (req.query.username) {
+    filter = { normalizedUsername: req.query.username.toLowerCase() };
+  }
+
   return User.aggregate([
-    { $match: { followers: req.user._id } },
+    { $match: filter },
     {
       $lookup: {
         from: 'posts',
@@ -93,7 +100,9 @@ async function sendPosts(foundPosts, res) {
 
 exports.getPosts = [
   asyncHandler(async (req, res, next) => {
-    if (req.query?.filter?.followed) {
+    const { query } = req;
+    const queryExists = Object.keys(query).length > 0;
+    if (queryExists) {
       next();
     } else {
       const foundPosts = await getLatestPostsFromAllUsers();
@@ -104,7 +113,7 @@ exports.getPosts = [
   verifyAuth,
 
   asyncHandler(async (req, res) => {
-    const foundPosts = await getLatestPostsFromFollowedUsers(req);
+    const foundPosts = await getLatestFilteredPosts(req);
     sendPosts(foundPosts, res);
   }),
 ];
