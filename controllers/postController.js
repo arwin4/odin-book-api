@@ -120,7 +120,7 @@ exports.getPosts = [
 
 exports.getPostById = asyncHandler(async (req, res) => {
   const { postId } = req.params;
-  const post = await Post.findById(postId);
+  const post = await Post.findById(postId).populate('author');
 
   const likesArray = [];
   post.likes.forEach((like) => likesArray.push({ type: 'likes', id: like }));
@@ -135,7 +135,22 @@ exports.getPostById = asyncHandler(async (req, res) => {
         dateCreated: post.dateCreated,
       },
       relationships: {
-        author: { data: { type: 'users', id: post.author } },
+        author: {
+          data: {
+            type: 'users',
+            id: post.author._id,
+            attributes: {
+              username: post.author.username,
+              normalizedUsername: post.author.normalizedUsername,
+              firstName: post.author.firstName,
+              dateCreated: post.author.dateCreated,
+              friends: post.author.friends,
+              followers: post.author.followers,
+              isBot: post.author.isBot,
+              bio: post.author.bio,
+            },
+          },
+        },
         likes: { data: likesArray },
       },
     },
