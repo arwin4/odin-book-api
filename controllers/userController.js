@@ -28,6 +28,7 @@ exports.getUser = asyncHandler(async (req, res) => {
           followers: foundUser.followers,
           isBot: foundUser.isBot,
           bio: foundUser.bio,
+          avatarUrl: foundUser.avatarUrl,
         },
       },
     });
@@ -50,6 +51,7 @@ exports.getCurrentUser = asyncHandler(async (req, res) =>
         dateCreated: req.user.dateCreated,
         friends: req.user.friends,
         followers: req.user.followers,
+        avatarUrl: req.user.avatarUrl,
       },
     },
   }),
@@ -81,10 +83,16 @@ exports.signUp = [
   }),
 
   asyncHandler(async (req, res, next) => {
+    // Assign random avatar
+    const avatarUrl = `https://avatars.githubusercontent.com/u/${Math.floor(
+      10 ** 7 + Math.random() * 10 ** 7,
+    )}`;
+
     const user = new User({
       username: req.body.username,
       normalizedUsername: req.body.username.toLowerCase(),
       firstName: req.body.firstName,
+      avatarUrl,
     });
 
     // Encrypt password
@@ -95,6 +103,7 @@ exports.signUp = [
     } catch (error) {
       next(error);
     }
+
     res.status(201).send({
       data: {
         type: 'users',
@@ -106,6 +115,7 @@ exports.signUp = [
           followers: user.followers,
           friends: user.friends,
           dateCreated: user.dateCreated,
+          avatarUrl: user.avatarUrl,
         },
       },
     });

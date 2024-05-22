@@ -8,6 +8,7 @@ const mockUser1 = {
   friends: [],
   firstName: 'Paula',
   bio: 'Bio of testUser',
+  avatarUrl: faker.image.avatar(),
 };
 
 const mockUser2 = {
@@ -15,6 +16,7 @@ const mockUser2 = {
   normalizedUsername: 'testuser2',
   firstName: 'Jeff',
   bio: 'Bio of testUser2',
+  avatarUrl: faker.image.avatar(),
 };
 
 const mockUser3 = {
@@ -22,6 +24,7 @@ const mockUser3 = {
   normalizedUsername: 'testuser3',
   firstName: 'Poo',
   bio: 'Bio of testUser3',
+  avatarUrl: faker.image.avatar(),
 };
 
 module.exports = { mockUser1, mockUser2, mockUser3 };

@@ -61,6 +61,7 @@ describe('Get user', () => {
           followers: [expect.any(String)],
           isBot: false,
           bio: expect.any(String),
+          avatarUrl: expect.any(String),
         },
       },
     };
@@ -82,6 +83,7 @@ describe('Get user', () => {
           dateCreated: expect.anything(),
           friends: [],
           followers: [],
+          avatarUrl: expect.any(String),
         },
       },
     };
@@ -296,6 +298,7 @@ describe('Signup', () => {
           friends: expect.anything(),
           dateCreated: expect.anything(),
           password: undefined,
+          avatarUrl: expect.any(String),
         },
       },
     };
@@ -390,3 +393,5 @@ describe('Followers', () => {
     });
   });
 });
+
+describe('Avatar', () => {});
