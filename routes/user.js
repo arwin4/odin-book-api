@@ -30,4 +30,9 @@ router.delete(
   followerController.deleteFollower,
 );
 
+/* == Avatar == */
+// Replace avatar
+// NOTE: this conflicts with the user GET route for username 'avatar'
+router.patch('/avatar', verifyAuth, userController.setAvatar);
+
 module.exports = router;

@@ -394,4 +394,39 @@ describe('Followers', () => {
   });
 });
 
-describe('Avatar', () => {});
+describe('Avatar', () => {
+  it('replaces the avatar', async () => {
+    const avatarUrl = 'https://avatarurl/';
+
+    const res = await request(app)
+      .patch('/avatar')
+      .send({
+        data: {
+          type: 'avatars',
+          attributes: {
+            avatarUrl,
+          },
+        },
+      });
+
+    expect(res.statusCode).toBe(200);
+
+    const expectedItem = {
+      data: {
+        type: 'users',
+        id: expect.anything(),
+        attributes: {
+          username: expect.anything(),
+          normalizedUsername: expect.anything(),
+          firstName: expect.anything(),
+          followers: expect.anything(),
+          friends: expect.anything(),
+          dateCreated: expect.anything(),
+          password: undefined,
+          avatarUrl,
+        },
+      },
+    };
+    expect(res.body).toEqual(expectedItem);
+  });
+});

@@ -121,3 +121,28 @@ exports.signUp = [
     });
   }),
 ];
+
+exports.setAvatar = asyncHandler(async (req, res) => {
+  // find current user
+  const { avatarUrl } = req.body.data.attributes;
+
+  const user = await findUser(req.user.username);
+  user.avatarUrl = avatarUrl;
+  await user.save();
+
+  res.status(200).send({
+    data: {
+      type: 'users',
+      id: user._id,
+      attributes: {
+        username: user.username,
+        normalizedUsername: user.normalizedUsername,
+        firstName: user.firstName,
+        followers: user.followers,
+        friends: user.friends,
+        dateCreated: user.dateCreated,
+        avatarUrl: user.avatarUrl,
+      },
+    },
+  });
+});
