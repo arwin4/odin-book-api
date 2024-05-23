@@ -123,11 +123,11 @@ exports.signUp = [
 ];
 
 exports.setAvatar = asyncHandler(async (req, res) => {
-  // find current user
-  const { avatarUrl } = req.body.data.attributes;
+  const { publicId } = req.body.data.attributes;
+  const croppedAvatarUrl = `https://res.cloudinary.com/dg2fuzzhq/image/upload/t_crop-avatar/${publicId}.avif`;
 
   const user = await findUser(req.user.username);
-  user.avatarUrl = avatarUrl;
+  user.avatarUrl = croppedAvatarUrl;
   await user.save();
 
   res.status(200).send({

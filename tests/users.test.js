@@ -396,7 +396,7 @@ describe('Followers', () => {
 
 describe('Avatar', () => {
   it('replaces the avatar', async () => {
-    const avatarUrl = 'https://avatarurl/';
+    const publicId = 'exampleId';
 
     const res = await request(app)
       .patch('/avatar')
@@ -404,7 +404,7 @@ describe('Avatar', () => {
         data: {
           type: 'avatars',
           attributes: {
-            avatarUrl,
+            publicId,
           },
         },
       });
@@ -423,7 +423,8 @@ describe('Avatar', () => {
           friends: expect.anything(),
           dateCreated: expect.anything(),
           password: undefined,
-          avatarUrl,
+          avatarUrl:
+            'https://res.cloudinary.com/dg2fuzzhq/image/upload/t_crop-avatar/exampleId.avif',
         },
       },
     };
