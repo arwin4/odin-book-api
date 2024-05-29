@@ -65,11 +65,13 @@ async function seedTestDb() {
     post: insertedMockPost1._id,
     author: insertedMockUser1._id,
     content: 'Test comment 1',
+    dateCreated: faker.date.past(),
   };
   const mockComment2 = {
     post: insertedMockPost1._id,
     author: insertedMockUser2._id,
     content: 'Test comment 2',
+    dateCreated: faker.date.past(),
   };
   await comments.insertMany([mockComment1, mockComment2]);
 }

@@ -63,6 +63,11 @@ describe('Get comment by post ID', () => {
               data: {
                 type: 'users',
                 id: expect.anything(),
+                attributes: {
+                  username: expect.anything(),
+                  firstName: expect.anything(),
+                  avatarUrl: expect.anything(),
+                },
               },
             },
             post: {
@@ -85,6 +90,11 @@ describe('Get comment by post ID', () => {
               data: {
                 type: 'users',
                 id: expect.anything(),
+                attributes: {
+                  username: expect.anything(),
+                  firstName: expect.anything(),
+                  avatarUrl: expect.anything(),
+                },
               },
             },
             post: {

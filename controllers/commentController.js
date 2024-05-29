@@ -1,11 +1,25 @@
 const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
 const Comment = require('../models/comment');
 const Post = require('../models/post');
 
 exports.getComments = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
+
   try {
-    const foundComments = await Comment.find().where('post', postId);
+    const foundComments = await Comment.aggregate([
+      { $match: { post: new mongoose.Types.ObjectId(postId) } },
+      { $sort: { dateCreated: -1 } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'author',
+          foreignField: '_id',
+          as: 'author',
+        },
+      },
+      { $unwind: '$author' },
+    ]);
 
     const resObj = { data: [] };
     foundComments.forEach((comment) => {
@@ -20,7 +34,12 @@ exports.getComments = asyncHandler(async (req, res, next) => {
           author: {
             data: {
               type: 'users',
-              id: comment.author,
+              id: comment.author._id,
+              attributes: {
+                username: comment.author.username,
+                firstName: comment.author.firstName,
+                avatarUrl: comment.author.avatarUrl,
+              },
             },
           },
           post: {
