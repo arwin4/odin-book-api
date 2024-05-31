@@ -165,6 +165,7 @@ describe('Get post', () => {
   it('returns 404 for nonexistent post', async () => {
     const res = await request(app).get('/non-existent');
     expect(res.status).toBe(404);
+    expect(res.body).toEqual({ errors: [{ title: 'Post not found.' }] });
   });
 });
 
