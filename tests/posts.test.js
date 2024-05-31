@@ -172,11 +172,6 @@ describe('Post post', () => {
   it('saves a new post', async () => {
     expect(await Post.countDocuments({})).toBe(3);
 
-    // frontend:
-    // TODO: must correctly handle <10MiB files and warn for bigger ones
-    //  Await upload to cloudinary
-    // https://cloudinary.com/documentation/client_side_uploading#code_explorer_upload_multiple_files_using_a_form_unsigned
-    // then forward url and other info to post('/')
     const fakerImageUrl = faker.image.url();
 
     const res = await request(app)
