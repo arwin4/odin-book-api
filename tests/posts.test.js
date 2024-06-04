@@ -69,6 +69,13 @@ describe('Get post', () => {
     expect(res.body.data).toHaveLength(3);
     expect(res.body.data).toContainEqual(expectedRes);
   });
+  it('allows pagination of test posts', async () => {
+    const res = await request(app).get('/?limit=2');
+
+    expect(res.body.data).toBeInstanceOf(Array);
+    expect(res.body.data).toHaveLength(2);
+    expect(res.body.data).toContainEqual(expectedRes);
+  });
   it('gets posts from followed users', async () => {
     const res = await request(app).get('/?filter[followed]=true');
 

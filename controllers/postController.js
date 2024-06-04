@@ -4,10 +4,10 @@ const Comment = require('../models/comment');
 const User = require('../models/user');
 const verifyAuth = require('../passport/verifyAuth');
 
-async function getLatestPostsFromAllUsers() {
+async function getLatestPostsFromAllUsers(limit = 10) {
   return Post.aggregate([
     { $sort: { dateCreated: -1 } },
-    { $limit: 10 },
+    { $limit: limit },
     {
       $lookup: {
         from: 'posts',
@@ -102,11 +102,16 @@ async function sendPosts(foundPosts, res) {
 exports.getPosts = [
   asyncHandler(async (req, res, next) => {
     const { query } = req;
+    const limit = query.limit && parseFloat(query.limit);
+    delete query.limit;
+
+    // Check for queries other than limit
     const queryExists = Object.keys(query).length > 0;
+
     if (queryExists) {
       next();
     } else {
-      const foundPosts = await getLatestPostsFromAllUsers();
+      const foundPosts = await getLatestPostsFromAllUsers(limit);
       sendPosts(foundPosts, res);
     }
   }),
