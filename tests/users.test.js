@@ -61,6 +61,7 @@ describe('Get user', () => {
           followers: [expect.any(String)],
           isBot: false,
           bio: expect.any(String),
+          avatarUrl: expect.any(String),
         },
       },
     };
@@ -82,6 +83,7 @@ describe('Get user', () => {
           dateCreated: expect.anything(),
           friends: [],
           followers: [],
+          avatarUrl: expect.any(String),
         },
       },
     };
@@ -296,6 +298,7 @@ describe('Signup', () => {
           friends: expect.anything(),
           dateCreated: expect.anything(),
           password: undefined,
+          avatarUrl: expect.any(String),
         },
       },
     };
@@ -388,5 +391,43 @@ describe('Followers', () => {
       });
       expect(userToUnfollow.followers.length).toBe(0);
     });
+  });
+});
+
+describe('Avatar', () => {
+  it('replaces the avatar', async () => {
+    const publicId = 'exampleId';
+
+    const res = await request(app)
+      .patch('/avatar')
+      .send({
+        data: {
+          type: 'avatars',
+          attributes: {
+            publicId,
+          },
+        },
+      });
+
+    expect(res.statusCode).toBe(200);
+
+    const expectedItem = {
+      data: {
+        type: 'users',
+        id: expect.anything(),
+        attributes: {
+          username: expect.anything(),
+          normalizedUsername: expect.anything(),
+          firstName: expect.anything(),
+          followers: expect.anything(),
+          friends: expect.anything(),
+          dateCreated: expect.anything(),
+          password: undefined,
+          avatarUrl:
+            'https://res.cloudinary.com/dg2fuzzhq/image/upload/t_crop-avatar/exampleId.avif',
+        },
+      },
+    };
+    expect(res.body).toEqual(expectedItem);
   });
 });

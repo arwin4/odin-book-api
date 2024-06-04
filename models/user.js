@@ -42,6 +42,10 @@ const UserSchema = mongoose.Schema({
     type: String,
     maxLength: [200, 'Bio must not exceed 200 characters'],
   },
+  avatarUrl: {
+    type: String,
+    maxLength: [500, 'URL length must not exceed 500 characters'],
+  },
   isBot: {
     type: Boolean,
     required: true,

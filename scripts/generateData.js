@@ -7,6 +7,9 @@ function createRandomUser() {
   const firstName = faker.person.firstName();
   const username = faker.internet.userName({ firstName, lastName: '' });
   const id = faker.database.mongodbObjectId();
+  const avatarUrl = `https://avatars.githubusercontent.com/u/${Math.floor(
+    10 ** 7 + Math.random() * 10 ** 7,
+  )}`;
 
   return {
     _id: id,
@@ -15,6 +18,7 @@ function createRandomUser() {
     normalizedUsername: username.toLowerCase(),
     bio: faker.lorem.sentence(),
     followers: [],
+    avatarUrl,
   };
 }
 
