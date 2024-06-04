@@ -41,60 +41,36 @@ describe('Verify test db setup', () => {
 });
 
 describe('Get post', () => {
+  const expectedRes = {
+    type: 'posts',
+    id: expect.anything(),
+    attributes: {
+      imageUrl: expect.anything(),
+      description: expect.anything(),
+      dateCreated: expect.anything(),
+    },
+    relationships: {
+      author: {
+        data: {
+          type: 'users',
+          id: expect.anything(),
+          attributes: expect.anything(),
+        },
+      },
+      likes: {
+        data: [{ type: 'likes', id: expect.anything() }],
+      },
+    },
+  };
   it('gets test posts', async () => {
     const res = await request(app).get('/');
-
-    const expectedRes = {
-      type: 'posts',
-      id: expect.anything(),
-      attributes: {
-        imageUrl: expect.anything(),
-        description: expect.anything(),
-        dateCreated: expect.anything(),
-      },
-      relationships: {
-        author: {
-          data: {
-            type: 'users',
-            id: expect.anything(),
-            attributes: expect.anything(),
-          },
-        },
-        likes: {
-          data: [{ type: 'likes', id: expect.anything() }],
-        },
-      },
-    };
 
     expect(res.body.data).toBeInstanceOf(Array);
     expect(res.body.data).toHaveLength(3);
     expect(res.body.data).toContainEqual(expectedRes);
   });
-
   it('gets posts from followed users', async () => {
     const res = await request(app).get('/?filter[followed]=true');
-
-    const expectedRes = {
-      type: 'posts',
-      id: expect.anything(),
-      attributes: {
-        imageUrl: expect.anything(),
-        description: expect.anything(),
-        dateCreated: expect.anything(),
-      },
-      relationships: {
-        author: {
-          data: {
-            type: 'users',
-            id: expect.anything(),
-            attributes: expect.anything(),
-          },
-        },
-        likes: {
-          data: [{ type: 'likes', id: expect.anything() }],
-        },
-      },
-    };
 
     expect(res.body.data).toBeInstanceOf(Array);
     expect(res.body.data).toHaveLength(1);
@@ -107,56 +83,10 @@ describe('Get post', () => {
     const res = await request(app).get(`/${postId}`);
     expect(res.status).toBe(200);
 
-    const expectedRes = {
-      data: {
-        type: 'posts',
-        id: expect.anything(),
-        attributes: {
-          imageUrl: expect.anything(),
-          description: expect.anything(),
-          dateCreated: expect.anything(),
-        },
-        relationships: {
-          author: {
-            data: {
-              type: 'users',
-              id: expect.anything(),
-              attributes: expect.anything(),
-            },
-          },
-          likes: {
-            data: [{ type: 'likes', id: expect.anything() }],
-          },
-        },
-      },
-    };
-
-    expect(res.body).toEqual(expectedRes);
+    expect(res.body.data).toEqual(expectedRes);
   });
   it('gets posts from specified user', async () => {
     const res = await request(app).get('/?username=testUser');
-
-    const expectedRes = {
-      type: 'posts',
-      id: expect.anything(),
-      attributes: {
-        imageUrl: expect.anything(),
-        description: 'This post has 2 comments',
-        dateCreated: expect.anything(),
-      },
-      relationships: {
-        author: {
-          data: {
-            type: 'users',
-            id: expect.anything(),
-            attributes: expect.anything(),
-          },
-        },
-        likes: {
-          data: [{ type: 'likes', id: expect.anything() }],
-        },
-      },
-    };
 
     expect(res.body.data).toBeInstanceOf(Array);
     expect(res.body.data).toHaveLength(1);
