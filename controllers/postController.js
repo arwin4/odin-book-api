@@ -30,6 +30,7 @@ async function getLatestPostsFromAllUsers(limit = 10) {
 }
 
 async function getLatestFilteredPosts(req) {
+  const limit = req.query.limit ? req.query.limit : 10;
   let filter;
   if (req.query.filter?.followed) {
     filter = { followers: req.user._id };
@@ -50,7 +51,7 @@ async function getLatestFilteredPosts(req) {
     { $project: { post: 1 } },
     { $unwind: '$post' },
     { $sort: { 'post.dateCreated': -1 } },
-    { $limit: 10 },
+    { $limit: limit },
     {
       $lookup: {
         from: 'users',
@@ -109,6 +110,7 @@ exports.getPosts = [
     const queryExists = Object.keys(query).length > 0;
 
     if (queryExists) {
+      query.limit = limit;
       next();
     } else {
       const foundPosts = await getLatestPostsFromAllUsers(limit);
