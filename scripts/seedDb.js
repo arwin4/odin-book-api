@@ -65,7 +65,7 @@ async function seedTestDb() {
     post: insertedMockPost1._id,
     author: insertedMockUser1._id,
     content: 'Test comment 1',
-    dateCreated: faker.date.past(),
+    dateCreated: faker.date.future(),
   };
   const mockComment2 = {
     post: insertedMockPost1._id,
