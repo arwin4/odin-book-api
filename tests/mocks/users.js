@@ -9,6 +9,7 @@ const mockUser1 = {
   firstName: 'Paula',
   bio: 'Bio of testUser',
   avatarUrl: faker.image.avatar(),
+  isBot: true,
 };
 
 const mockUser2 = {
@@ -17,6 +18,7 @@ const mockUser2 = {
   firstName: 'Jeff',
   bio: 'Bio of testUser2',
   avatarUrl: faker.image.avatar(),
+  isBot: true,
 };
 
 const mockUser3 = {
@@ -25,6 +27,7 @@ const mockUser3 = {
   firstName: 'Poo',
   bio: 'Bio of testUser3',
   avatarUrl: faker.image.avatar(),
+  isBot: true,
 };
 
 module.exports = { mockUser1, mockUser2, mockUser3 };

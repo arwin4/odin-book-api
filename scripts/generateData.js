@@ -19,6 +19,7 @@ function createRandomUser() {
     bio: faker.lorem.sentence(),
     followers: [],
     avatarUrl,
+    isBot: true,
   };
 }
 
