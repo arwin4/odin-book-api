@@ -106,7 +106,6 @@ if (process.env.NODE_ENV === 'development') {
     .then(() => console.log('Server has finished starting.'));
 }
 
-// Post automatically
 autoPost();
 
 module.exports = app;
