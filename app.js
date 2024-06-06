@@ -58,6 +58,7 @@ passport.deserializeUser(async (id, done) => {
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const postRouter = require('./routes/post');
+const autoPost = require('./scripts/autoPost');
 
 app.use('/auth/', authRouter);
 app.use('/users/', userRouter);
@@ -106,5 +107,8 @@ if (process.env.NODE_ENV === 'development') {
     })
     .then(() => console.log('Server has finished starting.'));
 }
+
+// Post automatically
+autoPost();
 
 module.exports = app;

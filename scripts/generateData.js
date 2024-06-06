@@ -78,4 +78,5 @@ module.exports = {
   createRandomPost,
   addRandomLikesToPost,
   createRandomComments,
+  createRandomComment,
 };
