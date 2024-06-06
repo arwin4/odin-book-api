@@ -100,9 +100,7 @@ if (process.env.NODE_ENV === 'development') {
   connectToMongoAtlas()
     .then(async () => {
       if (process.env.SEED_DB === 'true') {
-        console.log('Seeding database...');
         await seedProductionDb();
-        console.log('Database has been seeded.');
       }
     })
     .then(() => console.log('Server has finished starting.'));

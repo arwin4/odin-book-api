@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line import/no-unresolved
 const { faker } = require('@faker-js/faker/locale/en');
 const mongoose = require('mongoose');
@@ -81,9 +82,11 @@ async function seedProductionDb() {
   const collections = await mongoose.connection.listCollections();
   if (collections.length > 0) {
     // eslint-disable-next-line no-console
-    console.log('The database has been seeded already.');
+    console.log('The database has been seeded already, skipping seeding.');
     return;
   }
+
+  console.log('Database is empty. Seeding database...');
 
   // Generate users
   const numberOfUsersToGenerate = 1000;
@@ -138,6 +141,8 @@ async function seedProductionDb() {
     Post.insertMany(postsToInsert),
     Comment.insertMany(commentsToInsert))
   ];
+
+  console.log('Database has been seeded.');
 }
 
 module.exports = { seedTestDb, seedProductionDb };
