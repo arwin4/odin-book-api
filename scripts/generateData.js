@@ -47,7 +47,7 @@ function addRandomLikesToPost(post, users) {
     throw new Error('Post must have no likes');
   }
 
-  const numberOfLikes = randomIntFromInterval(0, 30);
+  const numberOfLikes = randomIntFromInterval(0, users.length);
   const randomUsers = shuffleArray(users);
 
   // Limit the users to just the amount of likes needed
