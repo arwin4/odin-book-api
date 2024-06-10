@@ -3,6 +3,11 @@ const { faker } = require('@faker-js/faker/locale/en');
 const randomIntFromInterval = require('../utils/randomIntFromInterval');
 const shuffleArray = require('../utils/shuffleArray');
 
+function getRandomImgUrl() {
+  const randomNumber = randomIntFromInterval(1, 900);
+  return `https://raw.githubusercontent.com/arwin4/odin-book-images/main/imgs/img (${randomNumber}).avif`;
+}
+
 function createRandomUser() {
   const firstName = faker.person.firstName();
   const username = faker.internet.userName({ firstName, lastName: '' });
@@ -26,7 +31,7 @@ function createRandomUser() {
 function createRandomPost(user) {
   return {
     _id: faker.database.mongodbObjectId(),
-    imageUrl: faker.image.url(),
+    imageUrl: getRandomImgUrl(),
     author: user._id,
     description: faker.lorem.sentence(),
     likes: [],
