@@ -9,7 +9,7 @@ const {
 const randomIntFromInterval = require('../utils/randomIntFromInterval');
 
 /**
- * Add a new post by a random bot user every 10 minutes on average, with likes
+ * Add a new post by a random bot user every hour on average, with likes
  * and comments.
  */
 function autoPost() {
@@ -47,7 +47,7 @@ function autoPost() {
         console.log(err);
       }
     }
-  }, 60000);
+  }, 600000);
 }
 
 module.exports = autoPost;
