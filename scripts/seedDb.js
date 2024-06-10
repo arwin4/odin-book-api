@@ -89,7 +89,7 @@ async function seedProductionDb() {
   console.log('Database is empty. Seeding database...');
 
   // Generate users
-  const numberOfUsersToGenerate = 1000;
+  const numberOfUsersToGenerate = 500;
   const usersToInsert = [];
 
   for (let i = 0; i < numberOfUsersToGenerate; i += 1) {
