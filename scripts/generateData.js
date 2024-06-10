@@ -67,13 +67,14 @@ function addRandomLikesToPost(post, users) {
 
 function createRandomComments(posts, users) {
   const comments = [];
-  const shuffledPosts = shuffleArray(posts);
-  // TODO: Allow multiple comments per user
-  const shuffledUsers = shuffleArray(users);
 
-  for (let i = 0; i < users.length; i += 1) {
-    comments.push(createRandomComment(shuffledPosts[i], shuffledUsers[i]));
-  }
+  posts.forEach((post) => {
+    const numberOfComments = randomIntFromInterval(1, 5);
+    for (let i = 0; i < numberOfComments; i += 1) {
+      const randomUser = shuffleArray(users)[0];
+      comments.push(createRandomComment(post, randomUser));
+    }
+  });
 
   return comments;
 }
