@@ -73,4 +73,17 @@ describe('Login', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveLength(163); // Generated JWT should have this length
   });
+
+  it('gets JWT on valid login with different username case', async () => {
+    const usernameWithDifferentCase = username.toUpperCase();
+
+    const res = await request(app)
+      .post('/auth/')
+      .type('form')
+      .send({ username: usernameWithDifferentCase })
+      .send({ password });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveLength(163); // Generated JWT should have this length
+  });
 });
