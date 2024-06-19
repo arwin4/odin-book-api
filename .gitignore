@@ -68,3 +68,7 @@ fly.toml
 
 # IDE
 .vscode/*
+
+# Docker
+.dockerignore
+Dockerfile
