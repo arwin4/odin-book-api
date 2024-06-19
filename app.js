@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 /* eslint-disable no-console */
 
 const createError = require('http-errors');
@@ -10,14 +9,14 @@ const logger = require('morgan');
 const session = require('express-session');
 const passport = require('passport');
 const User = require('./models/user');
+const { seedProductionDb } = require('./scripts/seedDb');
 
 // Dev imports
 let startMemoryMongoServer;
-let seedProductionDb;
 if (process.env.NODE_ENV === 'development') {
   startMemoryMongoServer =
+    // eslint-disable-next-line global-require
     require('./tests/memoryMongoServer').startMemoryMongoServer;
-  seedProductionDb = require('./scripts/seedDb').seedProductionDb;
 }
 
 const app = express();
