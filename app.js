@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 /* eslint-disable no-console */
 
 const createError = require('http-errors');
@@ -8,9 +9,16 @@ const path = require('path');
 const logger = require('morgan');
 const session = require('express-session');
 const passport = require('passport');
-const { startMemoryMongoServer } = require('./tests/memoryMongoServer');
 const User = require('./models/user');
-const { seedProductionDb } = require('./scripts/seedDb');
+
+// Dev imports
+let startMemoryMongoServer;
+let seedProductionDb;
+if (process.env.NODE_ENV === 'development') {
+  startMemoryMongoServer =
+    require('./tests/memoryMongoServer').startMemoryMongoServer;
+  seedProductionDb = require('./scripts/seedDb').seedProductionDb;
+}
 
 const app = express();
 
@@ -99,9 +107,7 @@ if (process.env.NODE_ENV === 'development') {
 } else if (process.env.NODE_ENV === 'production') {
   connectToMongoAtlas()
     .then(async () => {
-      if (process.env.SEED_DB === 'true') {
-        await seedProductionDb();
-      }
+      await seedProductionDb();
     })
     .then(() => console.log('Server has finished starting.'));
 }
