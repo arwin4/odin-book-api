@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { checkSchema } = require('express-validator');
 const Comment = require('../models/comment');
 const Post = require('../models/post');
-const commentSchema = require('../express-validator-schemas/comment');
+const commentSchema = require('../models/express-validator-schemas/comment');
 const respondOnValidationError = require('../utils/respondOnValidationError');
 
 exports.getComments = asyncHandler(async (req, res, next) => {
