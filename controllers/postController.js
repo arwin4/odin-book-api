@@ -1,8 +1,11 @@
 const asyncHandler = require('express-async-handler');
+const { checkSchema } = require('express-validator');
 const Post = require('../models/post');
 const Comment = require('../models/comment');
 const User = require('../models/user');
 const verifyAuth = require('../passport/verifyAuth');
+const postSchema = require('../models/express-validator-schemas/post');
+const respondOnValidationError = require('../utils/respondOnValidationError');
 
 async function getLatestPostsFromAllUsers(limit = 10) {
   return Post.aggregate([
@@ -166,41 +169,55 @@ exports.getPostById = asyncHandler(async (req, res) => {
   });
 });
 
-exports.postPost = asyncHandler(async (req, res, next) => {
-  let post;
-  try {
-    // TODO: add validation & sanitization
-    post = new Post({
-      imageUrl: req.body.data.attributes.imageUrl,
-      author: req.user._id,
-      description: req.body.data.attributes.description,
-    });
-    await post.save();
-  } catch (error) {
-    next(error);
-  }
+exports.postPost = [
+  asyncHandler(async (req, res, next) => {
+    // Set json to req.body for checkSchema
+    const { attributes } = req.body.data;
+    req.body = attributes;
+    return next();
+  }),
 
-  const likesArray = [];
-  post.likes.forEach((like) => likesArray.push({ type: 'likes', id: like }));
+  checkSchema(postSchema),
 
-  res.status(201).send({
-    data: {
-      type: 'posts',
-      id: post._id,
-      attributes: {
-        imageUrl: post.imageUrl,
-        description: post.description,
-        dateCreated: post.dateCreated,
-      },
-      relationships: {
-        author: {
-          data: { type: 'users', id: post.author },
+  asyncHandler(async (req, res, next) => {
+    respondOnValidationError(req, res, next);
+  }),
+
+  asyncHandler(async (req, res, next) => {
+    let post;
+    try {
+      post = new Post({
+        imageUrl: req.body.imageUrl,
+        author: req.user._id,
+        description: req.body.description,
+      });
+      await post.save();
+    } catch (error) {
+      next(error);
+    }
+
+    const likesArray = [];
+    post.likes.forEach((like) => likesArray.push({ type: 'likes', id: like }));
+
+    res.status(201).send({
+      data: {
+        type: 'posts',
+        id: post._id,
+        attributes: {
+          imageUrl: post.imageUrl,
+          description: post.description,
+          dateCreated: post.dateCreated,
         },
-        likes: { data: likesArray },
+        relationships: {
+          author: {
+            data: { type: 'users', id: post.author },
+          },
+          likes: { data: likesArray },
+        },
       },
-    },
-  });
-});
+    });
+  }),
+];
 
 exports.deletePost = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;

@@ -107,6 +107,46 @@ describe('Get post', () => {
 });
 
 describe('Post post', () => {
+  it('refuses post if description too long', async () => {
+    expect(await Post.countDocuments({})).toBe(3);
+
+    const fakerImageUrl = faker.image.url();
+
+    const res = await request(app)
+      .post('/')
+      .send({
+        data: {
+          type: 'posts',
+          attributes: {
+            imageUrl: fakerImageUrl,
+            description:
+              'This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. This description is too long. ',
+          },
+        },
+      });
+
+    expect(res.statusCode).toBe(400);
+    expect(await Post.countDocuments({})).toBe(3);
+  });
+  it('refuses post if imageUrl too long', async () => {
+    expect(await Post.countDocuments({})).toBe(3);
+
+    const res = await request(app)
+      .post('/')
+      .send({
+        data: {
+          type: 'posts',
+          attributes: {
+            imageUrl:
+              'https://thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.thisURLisTooLong.com/',
+            description: 'Test description',
+          },
+        },
+      });
+
+    expect(res.statusCode).toBe(400);
+    expect(await Post.countDocuments({})).toBe(3);
+  });
   it('saves a new post', async () => {
     expect(await Post.countDocuments({})).toBe(3);
 
