@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const PostSchema = mongoose.Schema({
   imageUrl: {
     type: String,
-    maxLength: [500, 'URL length must not exceed 500 characters'],
+    maxLength: [200, 'URL length must not exceed 200 characters'],
     required: true,
   },
   author: {
