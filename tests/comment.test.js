@@ -123,6 +123,8 @@ describe('Get comment by post ID', () => {
 
 describe('Post comment', () => {
   it('saves a new comment', async () => {
+    expect(await Comment.countDocuments()).toBe(2);
+
     const currentPost = await Post.findOne({
       description: 'This post has no comments',
     });
@@ -167,11 +169,7 @@ describe('Post comment', () => {
     };
 
     expect(res.body).toEqual(expectedRes);
-    expect(
-      await Post.countDocuments({
-        description: 'This post has no comments',
-      }),
-    ).toBe(1);
+    expect(await Comment.countDocuments()).toBe(3);
   });
   it('returns 404 for nonexistent post', async () => {
     const res = await request(app)
