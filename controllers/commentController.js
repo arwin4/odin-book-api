@@ -1,7 +1,10 @@
 const asyncHandler = require('express-async-handler');
 const mongoose = require('mongoose');
+const { checkSchema } = require('express-validator');
 const Comment = require('../models/comment');
 const Post = require('../models/post');
+const commentSchema = require('../express-validator-schemas/comment');
+const respondOnValidationError = require('../utils/respondOnValidationError');
 
 exports.getComments = asyncHandler(async (req, res, next) => {
   const { postId } = req.params;
@@ -57,46 +60,61 @@ exports.getComments = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.postComment = asyncHandler(async (req, res, next) => {
-  const { postId } = req.params;
-  let comment;
-  try {
-    // TODO: add validation & sanitization
-    comment = new Comment({
-      post: postId,
-      content: req.body.data.attributes.content,
-      author: req.user._id,
-    });
-    await comment.save();
+exports.postComment = [
+  asyncHandler(async (req, res, next) => {
+    // Set json to req.body for checkSchema
+    const { attributes } = req.body.data;
+    req.body = attributes;
+    return next();
+  }),
 
-    res.status(201).send({
-      data: {
-        type: 'comments',
-        id: comment._id,
-        attributes: {
-          content: comment.content,
-          dateCreated: comment.dateCreated,
-        },
-        relationships: {
-          author: {
-            data: {
-              type: 'users',
-              id: comment.author,
+  checkSchema(commentSchema),
+
+  asyncHandler(async (req, res, next) => {
+    respondOnValidationError(req, res, next);
+  }),
+
+  asyncHandler(async (req, res, next) => {
+    const { postId } = req.params;
+    let comment;
+
+    try {
+      comment = new Comment({
+        post: postId,
+        content: req.body.content,
+        author: req.user._id,
+      });
+      await comment.save();
+
+      res.status(201).send({
+        data: {
+          type: 'comments',
+          id: comment._id,
+          attributes: {
+            content: comment.content,
+            dateCreated: comment.dateCreated,
+          },
+          relationships: {
+            author: {
+              data: {
+                type: 'users',
+                id: comment.author,
+              },
+            },
+            post: {
+              data: {
+                type: 'posts',
+                id: comment.post,
+              },
             },
           },
-          post: {
-            data: {
-              type: 'posts',
-              id: comment.post,
-            },
-          },
         },
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+      });
+    } catch (error) {
+      next(error);
+    }
+  }),
+];
 
 exports.deleteComment = asyncHandler(async (req, res, next) => {
   const { postId, commentId } = req.params;

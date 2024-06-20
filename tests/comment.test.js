@@ -122,6 +122,29 @@ describe('Get comment by post ID', () => {
 });
 
 describe('Post comment', () => {
+  it('refuses comment exceeding allowed length', async () => {
+    expect(await Comment.countDocuments()).toBe(2);
+
+    const currentPost = await Post.findOne({
+      description: 'This post has no comments',
+    });
+    const postId = currentPost.id;
+
+    const res = await request(app)
+      .post(`/${postId}/comments`)
+      .send({
+        data: {
+          type: 'comments',
+          attributes: {
+            content:
+              'This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. This comment is too long. ',
+          },
+        },
+      });
+
+    expect(res.statusCode).toBe(400);
+    expect(await Comment.countDocuments()).toBe(2);
+  });
   it('saves a new comment', async () => {
     expect(await Comment.countDocuments()).toBe(2);
 
