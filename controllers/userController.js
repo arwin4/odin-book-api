@@ -83,10 +83,9 @@ exports.signUp = [
   }),
 
   asyncHandler(async (req, res, next) => {
-    // Assign random avatar
-    const avatarUrl = `https://avatars.githubusercontent.com/u/${Math.floor(
-      10 ** 7 + Math.random() * 10 ** 7,
-    )}`;
+    // Assign placeholder avatar
+    const avatarUrl =
+      'https://res.cloudinary.com/dg2fuzzhq/image/upload/t_crop-avatar/avatar/djqhxufcarphtotzzqrg.avif';
 
     const user = new User({
       username: req.body.username,
